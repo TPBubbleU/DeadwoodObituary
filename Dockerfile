@@ -1,7 +1,7 @@
 FROM ubuntu:bionic
 
 RUN apt-get update && apt-get install -y python3.7 python3-pip
-RUN python3.7 -m pip install discord
+RUN python3.7 -m pip install -U "discord.py[voice]"
 
 COPY Bot.py /Bot.py
 
