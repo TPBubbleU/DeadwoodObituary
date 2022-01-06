@@ -87,8 +87,8 @@ async def on_voice_state_update(member, before, after):
     for i in bot.voice_clients:
       await i.disconnect()
     vc = await after.channel.connect()
-    player = vc.create_ffmpeg_player('TheGoodtheBadandtheUgly.mp3')
-    player.start()
+    audio_source = discord.FFmpegAudio('TheGoodtheBadandtheUgly.mp3')
+    player.play(audio_source, after=None)
     while not player.is_done():
       await asyncio.sleep(1)
     # disconnect after the player has finished
