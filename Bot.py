@@ -2,12 +2,12 @@ import discord, datetime, asyncio, os
 from discord.ext import commands
 
 try:  
-   os.environ["discord_bot_token"]
+   os.environ["DISCORD_BOT_TOKEN"]
 except KeyError: 
-   print ("Please set the environment variable discord_bot_token")
+   print ("Please set the environment variable DISCORD_BOT_TOKEN")
    exit(1)
 
-secret_token = (os.environ["discord_bot_token"])
+secret_token = (os.environ["DISCORD_BOT_TOKEN"])
 
 UsersLists = {}
 intents = discord.Intents.default()
