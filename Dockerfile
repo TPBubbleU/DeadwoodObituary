@@ -6,4 +6,4 @@ RUN python3 -m pip install -U "discord.py[voice]"
 COPY TheGoodtheBadandtheUgly.mp3 /TheGoodtheBadandtheUgly.mp3
 COPY Bot.py /Bot.py
 
-CMD python3 Bot.py
+CMD ["python3","-u","Bot.py"]
