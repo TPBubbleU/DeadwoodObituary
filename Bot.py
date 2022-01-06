@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.command()
 async def ShowMyList(ctx):
+  print(f"Started a ShowMyList Command at {datetime.datetime.now}")
   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
     warningMessage = await ctx.send("Don't message here! It's not private")
     await asyncio.sleep(5)
@@ -30,6 +31,7 @@ async def ShowMyList(ctx):
 
 @bot.command()
 async def AddtoMyList(ctx, *inputmembers):
+  print(f"Started a AddtoMyList Command at {datetime.datetime.now}")
   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
     warningMessage = await ctx.send("Don't message here! It's not private")
     await asyncio.sleep(5)
@@ -45,11 +47,13 @@ async def on_ready():
 
 @bot.event
 async def on_voice_state_update(member, before, after):
+  print(f"Started a on_voice_state_update at {datetime.datetime.now}")
   if member != bot.user: #Quick and easy out if the event is caused by a bot
     return
   SpecialChannelName = 'Round Up A Posse'
   # Make a new channel if the user joins the special channel
   if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
+    print(f"Started the process of making a new channel at {datetime.datetime.now}")
     guild = after.channel.guild
     
     overwrites = None
@@ -77,13 +81,16 @@ async def on_voice_state_update(member, before, after):
   # Delete voice channels if no one is in them after state updates and they are not the Special name
   if after is not None and after.channel is not None:
     if len(after.channel.voice_states) == 0 and after.channel.name != SpecialChannelName:
+      print(f"Started the process of deleting a channel at {datetime.datetime.now}")
       await after.channel.delete()
   if before is not None and before.channel is not None:
     if len(before.channel.voice_states) == 0 and before.channel.name != SpecialChannelName:
+      print(f"Started the process of deleting a channel at {datetime.datetime.now}")
       await before.channel.delete()
       
   # Lets have a random chance to make a sound on entry
-  if random.random() <= 1 and after.channel.name != SpecialChannelName: #10% chance
+  if random.random() <= 1 and after is not None and after.channel.name != SpecialChannelName: #10% chance
+    print(f"Started the process of making random noise at {datetime.datetime.now}")
     for i in bot.voice_clients:
       await i.disconnect()
     vc = await after.channel.connect()
