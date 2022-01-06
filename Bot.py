@@ -48,8 +48,8 @@ async def on_ready():
 @bot.event
 async def on_voice_state_update(member, before, after):
   print(f"Started a on_voice_state_update at {datetime.datetime.now()}")
-  #if member != bot.user: #Quick and easy out if the event is caused by a bot
-  #  return
+  if member.bot: #Quick and easy out if the event is caused by a bot
+    return
   SpecialChannelName = 'Round Up A Posse'
   # Make a new channel if the user joins the special channel
   if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
