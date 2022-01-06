@@ -94,8 +94,8 @@ async def on_voice_state_update(member, before, after):
     for i in bot.voice_clients:
       await i.disconnect(force=True)
     vc = await after.channel.connect()
-    vc.play(discord.FFmpegAudio('TheGoodtheBadandtheUgly.mp3'), after=None)
-    await asyncio.sleep(5)
+    vc.play(discord.FFmpegPCMAudio('TheGoodtheBadandtheUgly.mp3'), after=None)
+    time.sleep(7)
     await vc.disconnect(force=True)
   print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
