@@ -1,4 +1,4 @@
-import discord, datetime, asyncio, os, random
+import discord, datetime, asyncio, os, random, time
 from discord.ext import commands
 
 try:  
@@ -89,12 +89,13 @@ async def on_voice_state_update(member, before, after):
       await before.channel.delete()
       
   # Lets have a random chance to make a sound on entry
-  if random.random() <= 1 and after.channel.name != SpecialChannelName: #10% chance
+  if random.random() <= .1 and after.channel.name != SpecialChannelName: #10% chance
     print(f"Started the process of making random noise at {datetime.datetime.now()}")
     for i in bot.voice_clients:
       await i.disconnect(force=True)
     vc = await after.channel.connect()
     vc.play(discord.FFmpegPCMAudio('TheGoodtheBadandtheUgly.mp3'), after=None)
+    vc.source.volume -= 0.2
     time.sleep(7)
     await vc.disconnect(force=True)
   print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
