@@ -53,7 +53,7 @@ async def on_voice_state_update(member, before, after):
   SpecialChannelName = 'Round Up A Posse'
   # Make a new channel if the user joins the special channel
   if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
-    print(f"Started the process of making a new channel at {datetime.datetime.now}")
+    print(f"Started the process of making a new channel at {datetime.datetime.now()}")
     guild = after.channel.guild
     
     overwrites = None
@@ -89,14 +89,14 @@ async def on_voice_state_update(member, before, after):
       await before.channel.delete()
       
   # Lets have a random chance to make a sound on entry
-  if random.random() <= 1 and before is None and after.channel.name != SpecialChannelName: #10% chance
+  if random.random() <= 1 and after.channel.name != SpecialChannelName: #10% chance
     print(f"Started the process of making random noise at {datetime.datetime.now()}")
     for i in bot.voice_clients:
-      await i.disconnect()
+      await i.disconnect(force=True)
     vc = await after.channel.connect()
     vc.play(discord.FFmpegAudio('TheGoodtheBadandtheUgly.mp3'), after=None)
     await asyncio.sleep(5)
-    await vc.disconnect()
+    await vc.disconnect(force=True)
   print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
 @bot.listen()
