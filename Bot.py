@@ -89,7 +89,7 @@ async def on_voice_state_update(member, before, after):
       await before.channel.delete()
       
   # Lets have a random chance to make a sound on entry
-  if random.random() <= 1 and after is not None and after.channel.name != SpecialChannelName: #10% chance
+  if random.random() <= .1 and after is not None and after.channel.name != SpecialChannelName: #10% chance
     print(f"Started the process of making random noise at {datetime.datetime.now()}")
     for i in bot.voice_clients:
       await i.disconnect(force=True)
