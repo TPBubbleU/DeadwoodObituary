@@ -1,6 +1,4 @@
-import discord
-import datetime
-import asyncio
+import discord, datetime, asyncio, os
 from discord.ext import commands
 
 try:  
