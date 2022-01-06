@@ -89,17 +89,13 @@ async def on_voice_state_update(member, before, after):
       await before.channel.delete()
       
   # Lets have a random chance to make a sound on entry
-  if random.random() <= 1 and after is not None and after.channel.name != SpecialChannelName: #10% chance
+  if random.random() <= 1 and before is None and after.channel.name != SpecialChannelName: #10% chance
     print(f"Started the process of making random noise at {datetime.datetime.now()}")
     for i in bot.voice_clients:
       await i.disconnect()
     vc = await after.channel.connect()
-    audio_source = discord.FFmpegAudio('TheGoodtheBadandtheUgly.mp3')
-    player.play(audio_source, after=None)
-    while not player.is_done():
-      await asyncio.sleep(1)
-    # disconnect after the player has finished
-    player.stop()
+    vc.play(discord.FFmpegAudio('TheGoodtheBadandtheUgly.mp3'), after=None)
+    await asyncio.sleep(5)
     await vc.disconnect()
   print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
