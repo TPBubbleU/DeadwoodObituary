@@ -1,31 +1,83 @@
 import discord
+import datetime
+import asyncio
 from discord.ext import commands
 import secret
 
-bot = commands.Bot(command_prefix="!")
+UsersLists = {}
+intents = discord.Intents.default()
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.command()
-async def MakeMeAChannel(ctx, inputMembers, channelName):
-  print("Starting Channel Making")
-  
-  inputMembers = inputMembers.split(",")
-  myMembers = []
-  for member in ctx.guild.members:
-    print(member.name)
-    if member.name in inputMembers:
-      myMembers.append(member)
-  if len(myMembers) == 0:
-    print("Couldn't find any Members")
-  
-  myChannel = await ctx.guild.create_voice_channel(channelName)
+async def ShowMyList(ctx):
+  if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
+    warningMessage = await ctx.send("Don't message here! It's not private")
+    await asyncio.sleep(5)
+    await warningMessage.delete()
+    await ctx.message.delete()
+    return
+  if ctx.author.id in UsersLists.keys():
+    await ctx.send(str(UsersLists[ctx.author.id]))
+  else:
+    await ctx.send("No List found for you")
+
+@bot.command()
+async def AddtoMyList(ctx, *inputmembers):
+  if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
+    warningMessage = await ctx.send("Don't message here! It's not private")
+    await asyncio.sleep(5)
+    await warningMessage.delete()
+    await ctx.message.delete()
+    return
+  UsersLists[ctx.author.id] = list(map(str.strip, " ".join(list(inputmembers)).split(",")))
+  await ctx.send("Updated")
 
 @bot.event
 async def on_ready():
   print(f'{bot.user} has connected to Discord!')
 
+@bot.event
+async def on_voice_state_update(member, before, after):
+  SpecialChannelName = 'Round Up A Posse'
+  # Make a new channel if the user joins the special channel
+  if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
+    guild = after.channel.guild
+    categoryChannel = guild.get_channel(887583365442715708)
+    overwrites = None
+    if member.id in UsersLists.keys(): 
+      guildMembers = await guild.fetch_members().flatten()
+      overwriteMemberList = []
+      for i in guildMembers:
+        for j in UsersLists[member.id]:
+          if j == i.nick or j == i.name:
+            print("Adding " + (i.nick if i.nick else i.name) + " to the list")
+            overwriteMemberList.append(i)
+      # Lets go out and actually make the overwrites object
+      overwrites = {
+        guild.default_role: discord.PermissionOverwrite(connect=False, view_channel=False),
+        # This is the "Townspeople" role
+        guild.get_role(891126367498928148): discord.PermissionOverwrite(connect=False, view_channel=False),
+        member: discord.PermissionOverwrite(connect=True, view_channel=True)
+      }
+      for i in overwriteMemberList:
+        overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
+    newChannel = await guild.create_voice_channel(name=member.nick, bitrate=128000, 
+                                                  category=categoryChannel, overwrites=overwrites)
+    await member.move_to(channel=newChannel)
+  # Delete voice channels if no one is in them after state updates and they are not the Special name
+  if after is not None and after.channel is not None:
+    if len(after.channel.voice_states) == 0 and after.channel.name != SpecialChannelName:
+      await after.channel.delete()
+  if before is not None and before.channel is not None:
+    if len(before.channel.voice_states) == 0 and before.channel.name != SpecialChannelName:
+      await before.channel.delete()
+
 @bot.listen()
 async def on_message(message):
   if message.content[:13] == "Hey Mr. Hand!":
     await message.channel.send("Dont anger that which you don't understand")
-
+  if message.channel.name == "post-office" and datetime.datetime.now().weekday() == 6:
+    await message.channel.send("https://tenor.com/view/no-post-on-sunday-vernon-dursley-sundays-harry-potter-gif-10875689")
 bot.run(secret.token)
