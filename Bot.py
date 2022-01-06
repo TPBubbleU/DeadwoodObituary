@@ -68,7 +68,7 @@ async def on_voice_state_update(member, before, after):
       }
       for i in overwriteMemberList:
         overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
-    newChannel = await guild.create_voice_channel(name=member.nick, bitrate=128000, 
+    newChannel = await guild.create_voice_channel(name=(member.nick if member.nick else member.name), bitrate=128000, 
                                                   category=categoryChannel, overwrites=overwrites)
     await member.move_to(channel=newChannel)
   # Delete voice channels if no one is in them after state updates and they are not the Special name
