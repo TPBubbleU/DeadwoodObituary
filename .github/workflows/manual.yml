@@ -28,4 +28,4 @@ jobs:
     - name: Run the Docker image
       run: docker run -d -e $discord_bot_token --name discord_bot_live discord_bot:prod 
       env:
-        discord_bot_token: ${{ secrets.discord_bot_token }}
+        discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
