@@ -1,4 +1,4 @@
-import discord, datetime, asyncio, os
+import discord, datetime, asyncio, os, random
 from discord.ext import commands
 
 try:  
@@ -45,11 +45,13 @@ async def on_ready():
 
 @bot.event
 async def on_voice_state_update(member, before, after):
+  if member != bot.user: #Quick and easy out if the event is caused by a bot
+    return
   SpecialChannelName = 'Round Up A Posse'
   # Make a new channel if the user joins the special channel
   if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
     guild = after.channel.guild
-    categoryChannel = guild.get_channel(887583365442715708)
+    
     overwrites = None
     if member.id in UsersLists.keys(): 
       guildMembers = await guild.fetch_members().flatten()
@@ -68,6 +70,7 @@ async def on_voice_state_update(member, before, after):
       }
       for i in overwriteMemberList:
         overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
+    categoryChannel = guild.get_channel(887583365442715708)
     newChannel = await guild.create_voice_channel(name=(member.nick if member.nick else member.name), bitrate=128000, 
                                                   category=categoryChannel, overwrites=overwrites)
     await member.move_to(channel=newChannel)
@@ -78,6 +81,19 @@ async def on_voice_state_update(member, before, after):
   if before is not None and before.channel is not None:
     if len(before.channel.voice_states) == 0 and before.channel.name != SpecialChannelName:
       await before.channel.delete()
+      
+  # Lets have a random chance to make a sound on entry
+  if random.random() <= 1 and after.channel.name != SpecialChannelName: #10% chance
+    for i in bot.voice_clients:
+      await i.disconnect()
+    vc = await after.channel.connect()
+    player = vc.create_ffmpeg_player('vuvuzela.mp3', after=lambda: print('done'))
+    player.start()
+    while not player.is_done():
+      await asyncio.sleep(1)
+    # disconnect after the player has finished
+    player.stop()
+    await vc.disconnect()
 
 @bot.listen()
 async def on_message(message):
