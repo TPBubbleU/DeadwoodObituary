@@ -2,7 +2,14 @@ import discord
 import datetime
 import asyncio
 from discord.ext import commands
-import secret
+
+try:  
+   os.environ["discord_bot_token"]
+except KeyError: 
+   print ("Please set the environment variable discord_bot_token")
+   exit(1)
+
+secret_token = (os.environ["discord_bot_token"])
 
 UsersLists = {}
 intents = discord.Intents.default()
@@ -80,4 +87,5 @@ async def on_message(message):
     await message.channel.send("Dont anger that which you don't understand")
   if message.channel.name == "post-office" and datetime.datetime.now().weekday() == 6:
     await message.channel.send("https://tenor.com/view/no-post-on-sunday-vernon-dursley-sundays-harry-potter-gif-10875689")
-bot.run(secret.token)
+
+bot.run(secret_token)
