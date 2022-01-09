@@ -1,6 +1,6 @@
 FROM ubuntu:bionic
 
-RUN apt-get update && apt-get install -y python3.7 python3-pip ffmpeg
+RUN apt-get update && apt-get install -y python3 python3-pip ffmpeg
 #RUN python3 -m pip install -U "discord.py[voice]"
 RUN python3 -m pip install -U "py-cord[voice]"
 
