@@ -13,7 +13,7 @@ UsersLists = {}
 intents = discord.Intents.default()
 intents.members = True
 
-bot = discord.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents, case_insensitive=True)
 
 @bot.slash_command(guild_ids=[882043693274628167])
 async def ShowMyList(ctx):
