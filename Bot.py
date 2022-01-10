@@ -56,7 +56,7 @@ async def on_voice_state_update(member, before, after):
     print(f"Started the process of making a new channel at {datetime.datetime.now()}")
     guild = after.channel.guild
     
-    overwrites = None
+    overwrites = {}
     if member.id in UsersLists.keys(): 
       guildMembers = await guild.fetch_members().flatten()
       overwriteMemberList = []
