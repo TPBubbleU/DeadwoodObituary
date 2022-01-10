@@ -16,7 +16,7 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", case_insensitive=True) #intents=intents,)
 
 @bot.slash_command(guild_ids=[882043693274628167])
-async def ShowMyList(ctx):
+async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
     warningMessage = await ctx.send("Don't message here! It's not private")
@@ -30,7 +30,7 @@ async def ShowMyList(ctx):
     await ctx.send("No List found for you")
 
 @bot.slash_command(guild_ids=[882043693274628167])
-async def AddtoMyList(ctx, *inputmembers):
+async def addtomylist(ctx, *inputmembers):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
     warningMessage = await ctx.send("Don't message here! It's not private")
