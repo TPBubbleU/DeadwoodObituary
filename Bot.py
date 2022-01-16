@@ -31,7 +31,7 @@ async def showmylist(ctx):
     await ctx.respond("No List found for you")
 
 @bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
-async def addtomylist(ctx, *members: discord.Option(discord.Member, required=True)):
+async def addtomylist(ctx, **members: discord.Option(discord.Member, required=True)):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
 #   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
 #     warningMessage = await ctx.send("Don't message here! It's not private")
