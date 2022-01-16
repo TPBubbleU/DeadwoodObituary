@@ -15,31 +15,31 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 
-@bot.slash_command(guild_ids=[882043693274628167])
-async def showmylist(ctx):
-  print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
-  if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
-    warningMessage = await ctx.send("Don't message here! It's not private")
-    await asyncio.sleep(5)
-    await warningMessage.delete()
-    await ctx.message.delete()
-    return
-  if ctx.author.id in UsersLists.keys():
-    await ctx.send(str(UsersLists[ctx.author.id]))
-  else:
-    await ctx.send("No List found for you")
+# @bot.slash_command(guild_ids=[882043693274628167])
+# async def showmylist(ctx):
+#   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
+#   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
+#     warningMessage = await ctx.respond("Don't message here! It's not private")
+#     await asyncio.sleep(5)
+#     await warningMessage.delete()
+#     await ctx.message.delete()
+#     return
+#   if ctx.author.id in UsersLists.keys():
+#     await ctx.respond(str(UsersLists[ctx.author.id]))
+#   else:
+#     await ctx.respond("No List found for you")
 
 @bot.slash_command(guild_ids=[882043693274628167])
 async def addtomylist(ctx, *inputmembers):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
-  if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
-    warningMessage = await ctx.send("Don't message here! It's not private")
-    await asyncio.sleep(5)
-    await warningMessage.delete()
-    await ctx.message.delete()
-    return
+#   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
+#     warningMessage = await ctx.send("Don't message here! It's not private")
+#     await asyncio.sleep(5)
+#     await warningMessage.delete()
+#     await ctx.message.delete()
+#     return
   UsersLists[ctx.author.id] = list(map(str.strip, " ".join(list(inputmembers)).split(",")))
-  await ctx.send("Updated")
+  await ctx.respond("Updated")
 
 @bot.event
 async def on_ready():
