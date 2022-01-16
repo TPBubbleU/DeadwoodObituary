@@ -16,7 +16,7 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 servers = [882043693274628167]
 
-@bot.slash_command(guild_ids=servers, name="Who is in my Posse", description="Show who will be allowed in voice when you round up a Posse")
+@bot.slash_command(guild_ids=servers, name="Who-is-in-my-Posse", description="Show who will be allowed in voice when you round up a Posse")
 async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
 #   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
@@ -30,7 +30,7 @@ async def showmylist(ctx):
   else:
     await ctx.respond("No List found for you")
 
-@bot.slash_command(guild_ids=servers, name="Add to my Posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
+@bot.slash_command(guild_ids=servers, name="Add-to-my-Posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
 async def addtomylist(ctx, *inputmembers):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
 #   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
