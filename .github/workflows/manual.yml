@@ -22,7 +22,7 @@ jobs:
       run: |
         docker stop discord_bot_live
         docker rm discord_bot_live
-        docker system prune
+        docker system prune -f
       continue-on-error: true
     - name: List images
       run: docker image ls
