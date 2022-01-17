@@ -21,9 +21,7 @@ async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
   # if we have a list for the author and it's not empty
   if ctx.author.id in UsersLists.keys() and UsersLists[ctx.author.id]:
-    responseContent = ""
-    for i in UsersLists[ctx.author.id]:
-      responseContent += str(bot.get_user(i))
+    responseContent = ', '.join([str(bot.get_user(i)) for i in UsersLists[ctx.author.id]])
     await ctx.respond(content=responseContent, ephemeral=True)
   else:
     await ctx.respond(content="No List found for you", ephemeral=True)
@@ -106,7 +104,7 @@ async def on_voice_state_update(member, before, after):
 async def on_message(message):
   if message.content[:13] == "Hey Mr. Hand!":
     await message.channel.send("Dont anger that which you don't understand")
-  if message.channel.name == "post-office" and datetime.datetime.now().weekday() == 6:
+  if message.channel.type == 'text' and message.channel.name == "post-office" and datetime.datetime.now().weekday() == 6:
     await message.channel.send("https://tenor.com/view/no-post-on-sunday-vernon-dursley-sundays-harry-potter-gif-10875689")
 
 bot.run(secret_token)
