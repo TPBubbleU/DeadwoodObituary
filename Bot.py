@@ -1,5 +1,6 @@
 import discord, datetime, asyncio, os, random, time
 from discord.ext import commands
+from discord.ui import Button, View
 
 try:  
   os.environ["DISCORD_BOT_TOKEN"]
@@ -16,32 +17,60 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 servers = [882043693274628167]
 
+###############################
+## Town things (Horsey Game) ##
+###############################
+
+@bot.slash_command(guild_ids=servers, name="guide-me-through-town", description="Have the hand guide you through town")
+async def guidethroughtown(ctx):
+  print(f"Started a GuideThroughTown Command at {datetime.datetime.now()}")
+  townView = View()
+  async def corral_Button_Callback(interaction)
+    corralView = View()
+    
+  
+  townView.add_item(Button(label="Go to the Corral", style=discord.ButtonStyle.green))
+  townView.add_item(Button(label="Go to the Saloon", style=discord.ButtonStyle.green))
+  townView.add_item(Button(label="Go to the Stables", style=discord.ButtonStyle.green))
+  townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
+  await ctx.respond("Welcome to the Town", view=townView)
+  
 ##################################
 ## Secret Discord Voices Things ##
 ##################################
 
+def getUserData(id):
+  if id not in UsersLists.keys():
+    UsersLists[id] = {"PosseList":[],"PosseName"=None}
+  return UsersLists[id]
+
+@bot.slash_command(guild_ids=servers, name="rename-posse", description="Change the name of the voice channel when you round up a posse")
+async def renameposse(ctx, Posse_Name: String):
+  print(f"Started a RenamePosse Command at {datetime.datetime.now()}")
+  userData = getUserData(ctx.author.id)
+  UsersLists[id]['PosseName'] = Posse_Name
+  await ctx.respond(content="No List found for you", ephemeral=True)
+
 @bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a posse")
 async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
-  # if we have a list for the author and it's not empty
-  if ctx.author.id in UsersLists.keys() and UsersLists[ctx.author.id]:
-    responseContent = ', '.join([str(bot.get_user(i)) for i in UsersLists[ctx.author.id]]) + " are currently in your posse" 
+  userData = getUserData(ctx.author.id)
+  if userData['PosseList']:
+    responseContent = ', '.join([str(bot.get_user(i)) for i in userData['PosseList']]) + " are currently in your posse" 
     await ctx.respond(content=responseContent, ephemeral=True)
   else:
-    await ctx.respond(content="No List found for you", ephemeral=True)
+    await ctx.respond(content="No posse list found for you", ephemeral=True)
 
 @bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add user(s) allowed in voice when you round up a posse")
 async def addtomylist(ctx, member1: discord.Option(discord.Member, required=True), 
                            member2: discord.Option(discord.Member, required=False), 
                            member3: discord.Option(discord.Member, required=False)):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
-  # If this is the first time the author has checked then lets make an empty list 
-  if not ctx.author.id in UsersLists.keys():
-    UsersLists[ctx.author.id] = []
+  userData = getUserData(ctx.author.id)
   # Append the authors list with an id if the member exists
   for i in [member1, member2, member3]:
     if i: 
-      UsersLists[ctx.author.id].append(i.id)
+      UsersLists[ctx.author.id]['PosseList'].append(i.id)
   # Respond to the user to let them know it worked
   await ctx.respond(content="Added " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " to the posse", ephemeral=True)
 
@@ -50,11 +79,9 @@ async def removefrommylist(ctx, member1: discord.Option(discord.Member, required
                                 member2: discord.Option(discord.Member, required=False), 
                                 member3: discord.Option(discord.Member, required=False)):
   print(f"Started a RemoveFromMyList Command at {datetime.datetime.now()}")
-  # Quick easy out if we don't have data
-  if not ctx.author.id in UsersLists.keys() or UsersLists[ctx.author.id]:
-    return
+  userData = getUserData(ctx.author.id)
   # Append the authors list with an id if the member exists
-  UsersLists[ctx.author.id] = [i for i in UsersLists[ctx.author.id] if i != member1.id or member2.id or member3.id]
+  UsersLists[ctx.author.id]['PosseList'] = [i for i in UsersLists[ctx.author.id]['PosseList'] if i != member1.id or i != member2.id or i!= member3.id]
   # Respond to the user to let them know it worked
   await ctx.respond(content="Removed " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " from the posse", ephemeral=True)
 
