@@ -25,7 +25,7 @@ servers = [882043693274628167]
 async def guidethroughtown(ctx):
   print(f"Started a GuideThroughTown Command at {datetime.datetime.now()}")
   townView = View()
-  async def corral_Button_Callback(interaction)
+  async def corral_Button_Callback(interaction):
     corralView = View()
     
   
