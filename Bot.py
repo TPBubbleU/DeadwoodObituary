@@ -26,9 +26,9 @@ async def showmylist(ctx):
 #     await ctx.message.delete()
 #     return
   if ctx.author.id in UsersLists.keys():
-    await ctx.respond(str(UsersLists[ctx.author.id]))
+    await ctx.respond(content=str(UsersLists[ctx.author.id]), ephemeral=True)
   else:
-    await ctx.respond("No List found for you")
+    await ctx.respond(content="No List found for you", ephemeral=True)
 
 @bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
 async def addtomylist(ctx, **members: discord.Option(discord.Member, required=True)):
@@ -41,7 +41,7 @@ async def addtomylist(ctx, **members: discord.Option(discord.Member, required=Tr
 #     return
   print(members)
   #UsersLists[ctx.author.id] = list(map(str.strip, " ".join(list(inputmembers)).split(",")))
-  await ctx.respond("Updated")
+  await ctx.respond(content="Updated", ephemeral=True)
 
 @bot.event
 async def on_ready():
