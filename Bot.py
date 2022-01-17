@@ -45,7 +45,7 @@ def getUserData(id):
   return UsersLists[id]
 
 @bot.slash_command(guild_ids=servers, name="rename-posse", description="Change the name of the voice channel when you round up a posse")
-async def renameposse(ctx, Posse_Name: discord.Option(str, required=True)):
+async def renameposse(ctx, posse_name: discord.Option(str, required=True)):
   print(f"Started a RenamePosse Command at {datetime.datetime.now()}")
   userData = getUserData(ctx.author.id)
   UsersLists[id]['PosseName'] = Posse_Name
