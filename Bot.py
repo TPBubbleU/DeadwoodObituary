@@ -19,12 +19,6 @@ servers = [882043693274628167]
 @bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a Posse")
 async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
-#   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
-#     warningMessage = await ctx.respond("Don't message here! It's not private")
-#     await asyncio.sleep(5)
-#     await warningMessage.delete()
-#     await ctx.message.delete()
-#     return
   if ctx.author.id in UsersLists.keys():
     await ctx.respond(content=str(UsersLists[ctx.author.id]), ephemeral=True)
   else:
@@ -33,12 +27,6 @@ async def showmylist(ctx):
 @bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
 async def addtomylist(ctx, **members: discord.Option(discord.Member, required=True)):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
-#   if ctx.channel.type != 'private' and ctx.author.name != 'TPBubbleU':
-#     warningMessage = await ctx.send("Don't message here! It's not private")
-#     await asyncio.sleep(5)
-#     await warningMessage.delete()
-#     await ctx.message.delete()
-#     return
   print(members)
   #UsersLists[ctx.author.id] = list(map(str.strip, " ".join(list(inputmembers)).split(",")))
   await ctx.respond(content="Updated", ephemeral=True)
