@@ -74,14 +74,12 @@ async def on_voice_state_update(member, before, after):
     guild = after.channel.guild
     
     overwrites = {}
-    if member.id in UsersLists.keys(): 
-      guildMembers = await guild.fetch_members().flatten()
+    if member.id in UsersLists.keys() and UsersLists[member.id]: 
       overwriteMemberList = []
-      for i in guildMembers:
-        for j in UsersLists[member.id]:
-          if j == i.nick or j == i.name:
-            print("Adding " + (i.nick if i.nick else i.name) + " to the list")
-            overwriteMemberList.append(i)
+      for i in UsersLists[member.id]:
+        tempuser = bot.get_user(i)
+        overwriteMemberList.append(tempuser)
+        print("Adding " + (tempuser.nick if tempuser.nick else tempuser.name) + " to the list")
       # Lets go out and actually make the overwrites object
       overwrites = {
         guild.default_role: discord.PermissionOverwrite(connect=False, view_channel=False),
