@@ -81,7 +81,7 @@ async def removefrommylist(ctx, member1: discord.Option(discord.Member, required
   print(f"Started a RemoveFromMyList Command at {datetime.datetime.now()}")
   userData = getUserData(ctx.author.id)
   # Append the authors list with an id if the member exists
-  UsersLists[ctx.author.id]['PosseList'] = [i for i in UsersLists[ctx.author.id]['PosseList'] if i != member1.id or i != member2.id or i!= member3.id]
+  UsersLists[ctx.author.id]['PosseList'] = [i for i in UsersLists[ctx.author.id]['PosseList'] if i != member1.id or (member2 and i != member2.id) or (member3 and i != member3.id)]
   # Respond to the user to let them know it worked
   await ctx.respond(content="Removed " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " from the posse", ephemeral=True)
 
