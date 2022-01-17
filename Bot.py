@@ -33,7 +33,7 @@ async def guidethroughtown(ctx):
   townView.add_item(Button(label="Go to the Saloon", style=discord.ButtonStyle.green))
   townView.add_item(Button(label="Go to the Stables", style=discord.ButtonStyle.green))
   townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
-  await ctx.respond("Welcome to the Town", view=townView)
+  await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
   
 ##################################
 ## Secret Discord Voices Things ##
