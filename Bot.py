@@ -22,7 +22,7 @@ async def showmylist(ctx):
   # if we have a list for the author and it's not empty
   if ctx.author.id in UsersLists.keys() and UsersLists[ctx.author.id]:
     responseContent = ""
-    for i in UsersLists[ctx.author.id]
+    for i in UsersLists[ctx.author.id]:
       responseContent += str(bot.get_user(i))
     await ctx.respond(content=responseContent, ephemeral=True)
   else:
