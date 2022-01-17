@@ -25,7 +25,7 @@ async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
   # if we have a list for the author and it's not empty
   if ctx.author.id in UsersLists.keys() and UsersLists[ctx.author.id]:
-    responseContent = ', '.join([str(bot.get_user(i)) for i in UsersLists[ctx.author.id]]) + " are currently in you're posse" 
+    responseContent = ', '.join([str(bot.get_user(i)) for i in UsersLists[ctx.author.id]]) + " are currently in your posse" 
     await ctx.respond(content=responseContent, ephemeral=True)
   else:
     await ctx.respond(content="No List found for you", ephemeral=True)
@@ -77,9 +77,7 @@ async def on_voice_state_update(member, before, after):
     if member.id in UsersLists.keys() and UsersLists[member.id]: 
       overwriteMemberList = []
       for i in UsersLists[member.id]:
-        tempuser = bot.get_user(i)
-        overwriteMemberList.append(tempuser)
-        print("Adding " + (tempuser.nick if tempuser.nick else tempuser.name) + " to the list")
+        overwriteMemberList.append(bot.get_user(i))
       # Lets go out and actually make the overwrites object
       overwrites = {
         guild.default_role: discord.PermissionOverwrite(connect=False, view_channel=False),
