@@ -99,6 +99,7 @@ async def on_voice_state_update(member, before, after):
   if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
     print(f"Started the process of making a new channel at {datetime.datetime.now()}")
     overwrites = {}
+    guild = after.channel.guild
     userData = getUserData(member.id)
     if userData["PosseList"]: 
       overwriteMemberList = []
