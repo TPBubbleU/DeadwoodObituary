@@ -41,7 +41,7 @@ async def guidethroughtown(ctx):
 
 def getUserData(id):
   if id not in UsersLists.keys():
-    UsersLists[id] = {"PosseList":[],"PosseName"=None}
+    UsersLists[id] = {"PosseList":[],"PosseName":None}
   return UsersLists[id]
 
 @bot.slash_command(guild_ids=servers, name="rename-posse", description="Change the name of the voice channel when you round up a posse")
@@ -98,12 +98,11 @@ async def on_voice_state_update(member, before, after):
   # Make a new channel if the user joins the special channel
   if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
     print(f"Started the process of making a new channel at {datetime.datetime.now()}")
-    guild = after.channel.guild
-    
     overwrites = {}
-    if member.id in UsersLists.keys() and UsersLists[member.id]: 
+    userData = getUserData(member.id)
+    if userData["PosseList"]: 
       overwriteMemberList = []
-      for i in UsersLists[member.id]:
+      for i in userData["PosseList"]:
         overwriteMemberList.append(bot.get_user(i))
       # Lets go out and actually make the overwrites object
       overwrites = {
@@ -114,9 +113,9 @@ async def on_voice_state_update(member, before, after):
       }
       for i in overwriteMemberList:
         overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
-    categoryChannel = guild.get_channel(887583365442715708)
-    newChannel = await guild.create_voice_channel(name=(member.nick if member.nick else member.name), bitrate=128000, 
-                                                  category=categoryChannel, overwrites=overwrites)
+    categoryChannel = guild.get_channel(887583365442715708) # Outside of Town
+    channelName = (userData["PosseName"] if userData["PosseName"] else (member.nick if member.nick else member.name))
+    newChannel = await guild.create_voice_channel(name=channelName, bitrate=128000, category=categoryChannel, overwrites=overwrites)
     await member.move_to(channel=newChannel)
   # Delete voice channels if no one is in them after state updates and they are not the Special name
   if after is not None and after.channel is not None:
