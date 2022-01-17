@@ -20,17 +20,17 @@ servers = [882043693274628167]
 ## Secret Discord Voices Things ##
 ##################################
 
-@bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a Posse")
+@bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a posse")
 async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
   # if we have a list for the author and it's not empty
   if ctx.author.id in UsersLists.keys() and UsersLists[ctx.author.id]:
-    responseContent = ', '.join([str(bot.get_user(i)) for i in UsersLists[ctx.author.id]])
+    responseContent = ', '.join([str(bot.get_user(i)) for i in UsersLists[ctx.author.id]]) + " are currently in you're posse" 
     await ctx.respond(content=responseContent, ephemeral=True)
   else:
     await ctx.respond(content="No List found for you", ephemeral=True)
 
-@bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add user(s) allowed in voice when you round up a Posse")
+@bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add user(s) allowed in voice when you round up a posse")
 async def addtomylist(ctx, member1: discord.Option(discord.Member, required=True), 
                            member2: discord.Option(discord.Member, required=False), 
                            member3: discord.Option(discord.Member, required=False)):
@@ -43,22 +43,20 @@ async def addtomylist(ctx, member1: discord.Option(discord.Member, required=True
     if i: 
       UsersLists[ctx.author.id].append(i.id)
   # Respond to the user to let them know it worked
-  await ctx.respond(content="Updated", ephemeral=True)
+  await ctx.respond(content="Added " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " to the posse", ephemeral=True)
 
-@bot.slash_command(guild_ids=servers, name="remove-from-my-posse", description="Remove user(s) allowed in voice when you round up a Posse")
+@bot.slash_command(guild_ids=servers, name="remove-from-my-posse", description="Remove user(s) allowed in voice when you round up a posse")
 async def removefrommylist(ctx, member1: discord.Option(discord.Member, required=True), 
-                           member2: discord.Option(discord.Member, required=False), 
-                           member3: discord.Option(discord.Member, required=False)):
+                                member2: discord.Option(discord.Member, required=False), 
+                                member3: discord.Option(discord.Member, required=False)):
   print(f"Started a RemoveFromMyList Command at {datetime.datetime.now()}")
-  
   # Quick easy out if we don't have data
   if not ctx.author.id in UsersLists.keys() or UsersLists[ctx.author.id]:
     return
-  
   # Append the authors list with an id if the member exists
   UsersLists[ctx.author.id] = [i for i in UsersLists[ctx.author.id] if i != member1.id or member2.id or member3.id]
   # Respond to the user to let them know it worked
-  await ctx.respond(content="Updated", ephemeral=True)
+  await ctx.respond(content="Removed " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " from the posse", ephemeral=True)
 
 ###############################
 ## New Discord Voices Things ##
