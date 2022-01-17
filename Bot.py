@@ -19,21 +19,34 @@ servers = [882043693274628167]
 @bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a Posse")
 async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
-  if ctx.author.id in UsersLists.keys():
-    await ctx.respond(content=str(UsersLists[ctx.author.id]), ephemeral=True)
+  # if we have a list for the author and it's not empty
+  if ctx.author.id in UsersLists.keys() and UsersLists[ctx.author.id]:
+    responseContent = ""
+    for i in UsersLists[ctx.author.id]
+      responseContent += str(bot.get_user(i))
+    await ctx.respond(content=responseContent, ephemeral=True)
   else:
     await ctx.respond(content="No List found for you", ephemeral=True)
 
 @bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
-async def addtomylist(ctx, **members: discord.Option(discord.Member, required=True)):
+async def addtomylist(ctx, member1: discord.Option(discord.Member, required=True), member2: discord.Option(discord.Member), member3: discord.Option(discord.Member)):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
-  print(members)
-  #UsersLists[ctx.author.id] = list(map(str.strip, " ".join(list(inputmembers)).split(",")))
+  # If this is the first time the author has checked then lets make an empty list 
+  if not ctx.author.id in UsersLists.keys():
+    UsersLists[ctx.author.id] = []
+  # Append the authors list with an id 
+  if member1:
+    UsersLists[ctx.author.id].append(member1.id)
+  if member2:
+    UsersLists[ctx.author.id].append(member2.id)
+  if member3:
+    UsersLists[ctx.author.id].append(member3.id)
+  # Respond to the user to let them know it worked
   await ctx.respond(content="Updated", ephemeral=True)
 
 @bot.event
 async def on_ready():
-  print(f'{bot.user} has connected to Discord!')
+  print(f'{bot.user} has connected to Discord at {datetime.datetime.now()}')
 
 @bot.event
 async def on_voice_state_update(member, before, after):
