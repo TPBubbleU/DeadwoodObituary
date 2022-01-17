@@ -48,7 +48,7 @@ def getUserData(id):
 async def renameposse(ctx, posse_name: discord.Option(str, required=True)):
   print(f"Started a RenamePosse Command at {datetime.datetime.now()}")
   userData = getUserData(ctx.author.id)
-  UsersLists[id]['PosseName'] = Posse_Name
+  UsersLists[id]['PosseName'] = posse_name
   await ctx.respond(content="No List found for you", ephemeral=True)
 
 @bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a posse")
