@@ -16,6 +16,10 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 servers = [882043693274628167]
 
+##################################
+## Secret Discord Voices Things ##
+##################################
+
 @bot.slash_command(guild_ids=servers, name="who-is-in-my-posse", description="Show who will be allowed in voice when you round up a Posse")
 async def showmylist(ctx):
   print(f"Started a ShowMyList Command at {datetime.datetime.now()}")
@@ -26,26 +30,40 @@ async def showmylist(ctx):
   else:
     await ctx.respond(content="No List found for you", ephemeral=True)
 
-@bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add to a list of who will be allowed in voice when you round up a Posse")
-async def addtomylist(ctx, member1: discord.Option(discord.Member, required=True), member2: discord.Option(discord.Member), member3: discord.Option(discord.Member)):
+@bot.slash_command(guild_ids=servers, name="add-to-my-posse", description="Add user(s) allowed in voice when you round up a Posse")
+async def addtomylist(ctx, member1: discord.Option(discord.Member, required=True), 
+                           member2: discord.Option(discord.Member, required=False), 
+                           member3: discord.Option(discord.Member, required=False)):
   print(f"Started a AddtoMyList Command at {datetime.datetime.now()}")
   # If this is the first time the author has checked then lets make an empty list 
   if not ctx.author.id in UsersLists.keys():
     UsersLists[ctx.author.id] = []
-  # Append the authors list with an id 
-  if member1:
-    UsersLists[ctx.author.id].append(member1.id)
-  if member2:
-    UsersLists[ctx.author.id].append(member2.id)
-  if member3:
-    UsersLists[ctx.author.id].append(member3.id)
+  # Append the authors list with an id if the member exists
+  for i in [member1, member2, member3]:
+    if i: 
+      UsersLists[ctx.author.id].append(i.id)
   # Respond to the user to let them know it worked
   await ctx.respond(content="Updated", ephemeral=True)
 
-@bot.event
-async def on_ready():
-  print(f'{bot.user} has connected to Discord at {datetime.datetime.now()}')
+@bot.slash_command(guild_ids=servers, name="remove-from-my-posse", description="Remove user(s) allowed in voice when you round up a Posse")
+async def removefrommylist(ctx, member1: discord.Option(discord.Member, required=True), 
+                           member2: discord.Option(discord.Member, required=False), 
+                           member3: discord.Option(discord.Member, required=False)):
+  print(f"Started a RemoveFromMyList Command at {datetime.datetime.now()}")
+  
+  # Quick easy out if we don't have data
+  if not ctx.author.id in UsersLists.keys() or UsersLists[ctx.author.id]:
+    return
+  
+  # Append the authors list with an id if the member exists
+  UsersLists[ctx.author.id] = [i for i in UsersLists[ctx.author.id] if i != member1.id or member2.id or member3.id]
+  # Respond to the user to let them know it worked
+  await ctx.respond(content="Updated", ephemeral=True)
 
+###############################
+## New Discord Voices Things ##
+###############################
+  
 @bot.event
 async def on_voice_state_update(member, before, after):
   print(f"Started a on_voice_state_update at {datetime.datetime.now()}")
@@ -100,6 +118,14 @@ async def on_voice_state_update(member, before, after):
     await vc.disconnect(force=True)
   print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
+#########################
+## Other Random Things ##
+#########################
+
+@bot.event
+async def on_ready():
+  print(f'{bot.user} has connected to Discord at {datetime.datetime.now()}')
+  
 @bot.listen()
 async def on_message(message):
   if message.content[:13] == "Hey Mr. Hand!":
