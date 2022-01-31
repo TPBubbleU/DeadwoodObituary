@@ -97,12 +97,24 @@ async def on_voice_state_update(member, before, after):
   if member.bot: #Quick and easy out if the event is caused by a bot
     return
   SpecialChannelName = 'Round Up A Posse'
+  
+  # Making named booleans for code visibility 
+  afterExists = after is not None and after.channel is not None
+  afterIsPosseChannel = afterExists and after.channel.name == SpecialChannelName 
+  nobodyInAfterChannel = afterExists and len(after.channel.voice_states) == 0
+  beforeExists = before is not None and before.channel is not None
+  beforeIsPosseChannel = beforeExists and before.channel.name == SpecialChannelName 
+  nobodyInBeforeChannel = beforeExists and len(before.channel.voice_states) == 0
+  randomSoundChance = random.random() <= .1 #10% chance
+  
   # Make a new channel if the user joins the special channel
-  if after is not None and after.channel is not None and after.channel.name == SpecialChannelName:
+  if afterExists and afterIsPosseChannel: # dont want things to trigger in posse channel
     print(f"Started the process of making a new channel at {datetime.datetime.now()}")
     overwrites = {}
     guild = after.channel.guild
     userData = getUserData(member.id)
+    
+    # If we have a posse list for the user lets go in and make custom overwrites for the channel
     if userData["PosseList"]: 
       overwriteMemberList = []
       for i in userData["PosseList"]:
@@ -120,33 +132,36 @@ async def on_voice_state_update(member, before, after):
     channelName = (userData["PosseName"] if userData["PosseName"] else (member.nick if member.nick else member.name))
     newChannel = await guild.create_voice_channel(name=channelName, bitrate=128000, category=categoryChannel, overwrites=overwrites)
     await member.move_to(channel=newChannel)
+    
   # Delete voice channels if no one is in them after state updates and they are not the Special name
-  if after is not None and after.channel is not None:
-    if len(after.channel.voice_states) == 0 and after.channel.name != SpecialChannelName:
-      print(f"Started the process of deleting a channel at {datetime.datetime.now()}")
-      await after.channel.delete()
-  if before is not None and before.channel is not None:
-    if len(before.channel.voice_states) == 0 and before.channel.name != SpecialChannelName:
-      print(f"Started the process of deleting a channel at {datetime.datetime.now()}")
-      await before.channel.delete()
+  if afterExists and not afterIsPosseChannel and nobodyInAfterChannel:
+    print(f"Started the process of deleting a channel at {datetime.datetime.now()}")
+    await after.channel.delete()
+  if beforeExists and not beforeIsPosseChannel and nobodyInBeforeChannel:
+    print(f"Started the process of deleting a channel at {datetime.datetime.now()}")
+    await before.channel.delete()
       
   # Lets have a random chance to make a sound on entry
-  if random.random() <= .1 and after is not None and after.channel.name != SpecialChannelName: #10% chance
+  if randomSoundChance and afterExists and not beforeExists and not afterIsPosseChannel:
     print(f"Started the process of making random noise at {datetime.datetime.now()}")
+    
+    # Lets disconnect the bot from all the voice channels they are currently in 
     for i in bot.voice_clients:
       await i.disconnect(force=True)
+      
+    # Connect to the channel we want the bot in and play the sound
     vc = await after.channel.connect()
-    if random.random() <= .5:
-      vc.play(discord.FFmpegPCMAudio('TheGoodtheBadandtheUgly.mp3',options='-filter:a "volume=0.4"'))
-    else:
-      vc.play(discord.FFmpegPCMAudio('PumpkinCowboy.mp3',options='-filter:a "volume=0.4"'))
+    soundFileName = random.choice(['TheGoodtheBadandtheUgly.mp3','PumpkinCowboy.mp3']) # Add to this list later
+    vc.play(discord.FFmpegPCMAudio(soundFileName,options='-filter:a "volume=0.4"'))
+    
+    # Wait a bit and disconnect
     time.sleep(5)
     await vc.disconnect(force=True)
   print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
-#########################
-## Other Random Things ##
-#########################
+##################
+## Other Things ##
+##################
 
 @bot.event
 async def on_ready():
