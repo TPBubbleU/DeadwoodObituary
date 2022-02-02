@@ -167,6 +167,15 @@ async def on_voice_state_update(member, before, after):
 async def on_ready():
   print(f'{bot.user} has connected to Discord at {datetime.datetime.now()}')
   
+@bot.event
+async def on_presence_update(before, after):
+  print(f"Started a on_presence_update at {datetime.datetime.now()}")
+  if after.status == 'streaming':
+    for channel in await bot.fetch_channel(887583365442715708).channels: # Channels in "Outside of Town" Category Channel
+      if channel.ChannelType == 'voice' and after in channel.members:
+        await channel.edit(name=f"(Streaming) {channel.name}", reason=f"{after.name} started streaming")
+        return
+
 @bot.listen()
 async def on_message(message):
   if message.content[:13] == "Hey Mr. Hand!":
