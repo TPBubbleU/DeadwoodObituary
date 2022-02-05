@@ -14,7 +14,7 @@ secret_token = (os.environ["DISCORD_BOT_TOKEN"])
 UsersLists = {}
 intents = discord.Intents.default()
 intents.members = True
-Intents.presences = True
+intents.presences = True
 
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 servers = [882043693274628167]
