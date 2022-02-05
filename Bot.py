@@ -1,6 +1,7 @@
 import discord, datetime, asyncio, os, random, time
 from discord.ext import commands
 from discord.ui import Button, View
+from Games.LoveLetter import LLGame
 
 try:  
   os.environ["DISCORD_BOT_TOKEN"]
@@ -13,6 +14,7 @@ secret_token = (os.environ["DISCORD_BOT_TOKEN"])
 UsersLists = {}
 intents = discord.Intents.default()
 intents.members = True
+Intents.presences = True
 
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 servers = [882043693274628167]
@@ -93,7 +95,7 @@ async def removefrommylist(ctx, member1: discord.Option(discord.Member, required
   
 @bot.event
 async def on_voice_state_update(member, before, after):
-  print(f"Started a on_voice_state_update at {datetime.datetime.now()}")
+  #print(f"Started a on_voice_state_update at {datetime.datetime.now()}")
   if member.bot: #Quick and easy out if the event is caused by a bot
     return
   SpecialChannelName = 'Round Up A Posse'
@@ -157,8 +159,19 @@ async def on_voice_state_update(member, before, after):
     # Wait a bit and disconnect
     time.sleep(5)
     await vc.disconnect(force=True)
-  print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
+  #print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
+###########
+## Games ##
+###########
+  
+@bot.slash_command(guild_ids=servers, name="love_letter", description="play a game of love letter")
+async def loveletter(ctx, member1: discord.Option(discord.Member, required=True), 
+                          member2: discord.Option(discord.Member, required=False), 
+                          member3: discord.Option(discord.Member, required=False)):
+  print(f"Started a love letter at {datetime.datetime.now()}")
+  await ctx.respond(content="Started an LL game with  " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " ", ephemeral=True)
+  
 ##################
 ## Other Things ##
 ##################
