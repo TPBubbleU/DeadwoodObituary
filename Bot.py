@@ -23,19 +23,19 @@ servers = [882043693274628167]
 ## Town things (Horsey Game) ##
 ###############################
 
-@bot.slash_command(guild_ids=servers, name="guide-me-through-town", description="Have the hand guide you through town")
-async def guidethroughtown(ctx):
-  print(f"Started a GuideThroughTown Command at {datetime.datetime.now()}")
-  townView = View()
-  async def corral_Button_Callback(interaction):
-    corralView = View()
+# @bot.slash_command(guild_ids=servers, name="guide-me-through-town", description="Have the hand guide you through town")
+# async def guidethroughtown(ctx):
+#   print(f"Started a GuideThroughTown Command at {datetime.datetime.now()}")
+#   townView = View()
+#   async def corral_Button_Callback(interaction):
+#     corralView = View()
     
   
-  townView.add_item(Button(label="Go to the Corral", style=discord.ButtonStyle.green))
-  townView.add_item(Button(label="Go to the Saloon", style=discord.ButtonStyle.green))
-  townView.add_item(Button(label="Go to the Stables", style=discord.ButtonStyle.green))
-  townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
-  await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
+#   townView.add_item(Button(label="Go to the Corral", style=discord.ButtonStyle.green))
+#   townView.add_item(Button(label="Go to the Saloon", style=discord.ButtonStyle.green))
+#   townView.add_item(Button(label="Go to the Stables", style=discord.ButtonStyle.green))
+#   townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
+#   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
   
 ##################################
 ## Secret Discord Voices Things ##
