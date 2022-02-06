@@ -41,8 +41,7 @@ servers = [882043693274628167]
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
                          , text: discord.Option(str, required=True)):
-  print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
-  print(f"For {ctx.author} channel of {channel} text of {text}")
+  print(f"Started a say command at {datetime.datetime.now()} for {ctx.author} channel of {channel} text of {text}")
   await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True, delete_after=5)
   # Lets make and save a voice to text mp3
   gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
@@ -52,7 +51,7 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
   # Wait until the file is done playing
   while vc.is_playing():
     time.sleep(1)
-  # stop the playback disconnect delete the response message
+  # stop the playback disconnect 
   vc.stop()
   await vc.disconnect()
 
