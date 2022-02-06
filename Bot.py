@@ -39,7 +39,7 @@ servers = [882043693274628167]
 #   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
 
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
-async def renameposse(ctx, channel_name: discord.Option(str, required=True)
+async def renameposse(ctx, channel_name: discord.Option(discord.VoiceChannel, required=True)
                          , text: discord.Option(str, required=True)):
   print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
   print(f"For {ctx.author} channel of {channel_name} text of {text}")
