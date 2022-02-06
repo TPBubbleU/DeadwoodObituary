@@ -44,7 +44,7 @@ async def renameposse(ctx, channel_name: discord.Option(str, required=True)
   print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
   print(f"For {ctx.author} channel of {channel_name} text of {text}")
   response = await ctx.respond(content=f"Saying {text} now", ephemeral=True)
-  targetChannel = [x for x in bot.get_all_channels() if x.name == channel_name and channel.type is discord.ChannelType.voice][0]
+  targetChannel = [x for x in bot.get_all_channels() if x.name == channel_name and x.type is discord.ChannelType.voice][0]
   # Lets make and save a voice to text mp3
   gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
   # Connect and play the file
