@@ -43,6 +43,7 @@ async def renameposse(ctx, channel_name: discord.Option(str, required=True)
                          , text: discord.Option(str, required=True)):
   print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
   print(f"For {ctx.author} channel of {channel_name} text of {text}")
+  await ctx.respond(content=f"Saying it now", ephemeral=True)
   for channel in bot.get_all_channels():
     if channel.name == channel_name and channel.type is discord.ChannelType.voice:
       NLChannel = channel
@@ -55,7 +56,6 @@ async def renameposse(ctx, channel_name: discord.Option(str, required=True)
   # disconnect after the player has finished
   vc.stop()
   await vc.disconnect()
-  await ctx.respond(content=f"Saying it now", ephemeral=True)
 
 ##################################
 ## Secret Discord Voices Things ##
