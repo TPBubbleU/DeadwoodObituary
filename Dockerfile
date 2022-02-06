@@ -6,7 +6,9 @@ RUN apt install -y git software-properties-common
 RUN add-apt-repository ppa:deadsnakes/ppa -y
 RUN apt install -y python3.9 python3-pip python3.9-distutils
 
-RUN python3.9 -m pip install -U pip setuptools
+RUN python3.9 -m pip install -U pip
+RUN python3.9 -m pip install -U setuptools
+RUN python3.9 -m pip install -U gtts
 RUN git clone https://github.com/Pycord-Development/pycord
 RUN cd pycord ; python3.9 -m pip install -U .[voice]
 
