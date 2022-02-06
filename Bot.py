@@ -56,7 +56,7 @@ async def renameposse(ctx, channel_name: discord.Option(str, required=True)
   # stop the playback disconnect delete the response message
   vc.stop()
   await vc.disconnect()
-  await response.delete_original_message()
+  await ctx.delete()
 
 ##################################
 ## Secret Discord Voices Things ##
