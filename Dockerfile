@@ -10,8 +10,6 @@ RUN python3.9 -m pip install -U pip setuptools
 RUN git clone https://github.com/Pycord-Development/pycord
 RUN cd pycord ; python3.9 -m pip install -U .[voice]
 
-COPY TheGoodtheBadandtheUgly.mp3 /TheGoodtheBadandtheUgly.mp3
-COPY PumpkinCowboy.mp3 /PumpkinCowboy.mp3
-COPY Bot.py /Bot.py
+COPY . /
 
 CMD ["python3.9","-u","Bot.py"]
