@@ -12,11 +12,11 @@ except KeyError:
 secret_token = (os.environ["DISCORD_BOT_TOKEN"])
 
 UsersLists = {}
-intents = discord.Intents.default()
-intents.members = True
-intents.presences = True
+Intents = discord.Intents.default()
+Intents.members = True
+Intents.presences = True
 
-bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
+bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=Intents)
 servers = [882043693274628167]
 
 ###############################
