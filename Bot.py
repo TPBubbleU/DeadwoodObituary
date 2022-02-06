@@ -42,7 +42,7 @@ servers = [882043693274628167]
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
                          , text: discord.Option(str, required=True)):
   print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
-  print(f"For {ctx.author} channel of {channel_name} text of {text}")
+  print(f"For {ctx.author} channel of {channel} text of {text}")
   await ctx.defer(ephemeral=True)
   # Lets make and save a voice to text mp3
   gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
