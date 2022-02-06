@@ -1,6 +1,7 @@
 import discord, datetime, asyncio, os, random, time
 from discord.ext import commands
 from discord.ui import Button, View
+from gtts import gTTS 
 #from Games.LoveLetter import LLGame
 
 try:  
@@ -36,7 +37,26 @@ servers = [882043693274628167]
 #   townView.add_item(Button(label="Go to the Stables", style=discord.ButtonStyle.green))
 #   townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
 #   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
-  
+
+@bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
+async def renameposse(ctx, channel_name: discord.Option(str, required=True)
+                         , text: discord.Option(str, required=True)):
+  print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
+  print(f"For {ctx.author} channel of {channel_name} text of {text}")
+  for channel in bot.get_all_channels():
+    if channel.name == channel_name and channel.type is discord.ChannelType.voice:
+      NLChannel = channel
+  myobj = gTTS(text=text, lang='en', slow=False) 
+  myobj.save("voicechat.mp3")
+  vc = await NLChannel.connect()
+  player = vc.play(discord.FFmpegPCMAudio(source="voicechat.mp3"))
+  while vc.is_playing():
+    time.sleep(1)
+  # disconnect after the player has finished
+  vc.stop()
+  await vc.disconnect()
+  await ctx.respond(content=f"Saying it now", ephemeral=True)
+
 ##################################
 ## Secret Discord Voices Things ##
 ##################################
