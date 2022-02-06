@@ -182,8 +182,8 @@ async def on_ready():
   
 @bot.event
 async def on_presence_update(before, after):
-  print(f"Started a on_presence_update at {datetime.datetime.now()}")
   if after.status == 'streaming':
+    print(f"Started a on_presence_update streaming at {datetime.datetime.now()}")
     for channel in await bot.fetch_channel(887583365442715708).channels: # Channels in "Outside of Town" Category Channel
       if channel.ChannelType == 'voice' and after in channel.members:
         await channel.edit(name=f"(Streaming) {channel.name}", reason=f"{after.name} started streaming")
