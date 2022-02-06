@@ -39,16 +39,15 @@ servers = [882043693274628167]
 #   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
 
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
-async def renameposse(ctx, channel_name: discord.Option(discord.VoiceChannel, required=True)
+async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
                          , text: discord.Option(str, required=True)):
   print(f"Started a The Hand Say Command at {datetime.datetime.now()}")
   print(f"For {ctx.author} channel of {channel_name} text of {text}")
-  response = await ctx.respond(content=f"Saying {text} now", ephemeral=True)
-  targetChannel = [x for x in bot.get_all_channels() if x.name == channel_name and x.type is discord.ChannelType.voice][0]
+  await ctx.defer(ephemeral=True)
   # Lets make and save a voice to text mp3
   gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
   # Connect and play the file
-  vc = await targetChannel.connect()
+  vc = await channel.connect()
   player = vc.play(discord.FFmpegPCMAudio(source="voicechat.mp3"))
   # Wait until the file is done playing
   while vc.is_playing():
@@ -56,7 +55,6 @@ async def renameposse(ctx, channel_name: discord.Option(discord.VoiceChannel, re
   # stop the playback disconnect delete the response message
   vc.stop()
   await vc.disconnect()
-  await ctx.delete()
 
 ##################################
 ## Secret Discord Voices Things ##
