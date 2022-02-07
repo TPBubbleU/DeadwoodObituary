@@ -38,11 +38,19 @@ servers = [882043693274628167]
 #   townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
 #   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
 
+# Nick Testing things
+@bot.slash_command(guild_ids=servers, name="the-big-test", description="Nick is messing around")
+async def renameposse(ctx, text: discord.Option(str, required=True)):
+  print(f"Started a test command at {datetime.datetime.now()} ")
+  response = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
+  time.sleep(10)
+  response.edit_message(content="We changed the thing", ephemeral=True)
+  
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
                          , text: discord.Option(str, required=True)):
   print(f"Started a say command at {datetime.datetime.now()} for {ctx.author} channel of {channel} text of {text}")
-  await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True, delete_after=5)
+  await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
   # Lets make and save a voice to text mp3
   gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
   # Connect and play the file
