@@ -43,8 +43,9 @@ servers = [882043693274628167]
 async def renameposse(ctx, text: discord.Option(str, required=True)):
   print(f"Started a test command at {datetime.datetime.now()} ")
   interaction = await ctx.respond(content=f"Saying '{text}' ", ephemeral=True)
+  followup = await interaction.followup.send(content=f"Saying '{text}' ", ephemeral=True)
   time.sleep(5)
-  await interaction.response.edit_message(content="We changed the thing")
+  await followup.response.edit_message(content="We changed the thing")
   
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
