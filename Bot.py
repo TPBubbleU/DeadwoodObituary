@@ -42,7 +42,7 @@ servers = [882043693274628167]
 @bot.slash_command(guild_ids=servers, name="the-big-test", description="Nick is messing around")
 async def renameposse(ctx, text: discord.Option(str, required=True)):
   print(f"Started a test command at {datetime.datetime.now()} ")
-  response = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
+  response = await ctx.respond(content=f"Saying '{text}' ", ephemeral=True)
   time.sleep(10)
   response.edit_message(content="We changed the thing", ephemeral=True)
   
