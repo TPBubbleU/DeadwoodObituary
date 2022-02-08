@@ -138,7 +138,7 @@ async def on_voice_state_update(member, before, after):
   # Make a new channel if the user joins the special channel
   if afterExists and afterIsPosseChannel: # dont want things to trigger in posse channel
     print(f"Started the process of making a new channel at {datetime.datetime.now()}")
-    overwrites = {}
+    overwrites = {member: discord.PermissionOverwrite(connect=True, view_channel=True, manage_channels=True)}
     guild = after.channel.guild
     userData = getUserData(member.id)
     
@@ -152,7 +152,7 @@ async def on_voice_state_update(member, before, after):
         guild.default_role: discord.PermissionOverwrite(connect=False, view_channel=False),
         # This is the "Townspeople" role
         guild.get_role(891126367498928148): discord.PermissionOverwrite(connect=False, view_channel=False),
-        member: discord.PermissionOverwrite(connect=True, view_channel=True)
+        member: discord.PermissionOverwrite(connect=True, view_channel=True, manage_channels=True)
       }
       for i in overwriteMemberList:
         overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
