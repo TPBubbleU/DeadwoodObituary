@@ -38,13 +38,13 @@ servers = [882043693274628167]
 #   townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
 #   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
 
-# Nick Testing things
-@bot.slash_command(guild_ids=servers, name="the-big-test", description="TPBubbleU is messing around")
-async def bigtest(ctx, text: discord.Option(str, required=True)):
-  print(f"Started a test command at {datetime.datetime.now()} ")
-  interaction = await ctx.respond(content=f"Saying '{text}' ", ephemeral=True)
-  time.sleep(5)
-  await interaction.edit_original_message(content="We changed the thing")
+# # Nick Testing things
+# @bot.slash_command(guild_ids=servers, name="the-big-test", description="TPBubbleU is messing around")
+# async def bigtest(ctx, text: discord.Option(str, required=True)):
+#   print(f"Started a test command at {datetime.datetime.now()} ")
+#   interaction = await ctx.respond(content=f"Saying '{text}' ", ephemeral=True)
+#   time.sleep(5)
+#   await interaction.edit_original_message(content="We changed the thing")
   
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
@@ -207,6 +207,17 @@ async def loveletter(ctx, member1: discord.Option(discord.Member, required=True)
 ##################
 ## Other Things ##
 ##################
+
+@bot.slash_command(guild_ids=servers, name="image_spoiler", description="Add a GOD-DAMNED IMAGE SPOILER")
+async def image_spoiler(ctx, text: discord.Option(str)):
+  print(f"Started a image spoiler command at {datetime.datetime.now()} ")
+  if ctx.file:
+    ctx.file.filename = 'SPOILER_' + ctx.file.filename
+    await ctx.respond(content=f"{text}", file=ctx.file)
+  elif ctx.files:
+    for file in ctx.files:
+      file.filename = 'SPOILER_' + file.filename 
+    await ctx.respond(content=f"{text}", files=ctx.files)
 
 @bot.event
 async def on_ready():
