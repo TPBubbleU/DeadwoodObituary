@@ -211,13 +211,9 @@ async def loveletter(ctx, member1: discord.Option(discord.Member, required=True)
 @bot.slash_command(guild_ids=servers, name="image_spoiler", description="Add a GOD-DAMNED IMAGE SPOILER")
 async def image_spoiler(ctx, text: discord.Option(str)):
   print(f"Started a image spoiler command at {datetime.datetime.now()} ")
-  if ctx.file:
-    ctx.file.filename = 'SPOILER_' + ctx.file.filename
-    await ctx.respond(content=f"{text}", file=ctx.file)
-  elif ctx.files:
-    for file in ctx.files:
-      file.filename = 'SPOILER_' + file.filename 
-    await ctx.respond(content=f"{text}", files=ctx.files)
+  for attachment in ctx.interaction.message.attachments:
+    attachment.filename = 'SPOILER_' + attachment.filename 
+  await ctx.respond(content=f"{text}", attachments=ctx.interaction.message.attachments)
 
 @bot.event
 async def on_ready():
