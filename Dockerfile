@@ -10,8 +10,8 @@ RUN python3.9 -m pip install -U pip
 RUN python3.9 -m pip install -U setuptools
 RUN python3.9 -m pip install -U gtts
 
-RUN python3.9 -m pip install py-cord==2.0.0b4
-RUN python3 -m pip install -U "py-cord[voice]"
+RUN python3.9 -m pip install py-cord[voice]==2.0.0b4
+#RUN python3 -m pip install -U "py-cord[voice]"
 #RUN git clone https://github.com/Pycord-Development/pycord
 #RUN cd pycord ; python3.9 -m pip install -U .[voice]
 
