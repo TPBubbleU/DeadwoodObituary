@@ -185,6 +185,12 @@ async def on_voice_state_update(member, before, after):
     # Wait a bit and disconnect
     time.sleep(5)
     await vc.disconnect(force=True)
+    
+  # Special Consideration for someone joining a channel that has already started streaming and the channels name doesn't start with streaming
+  if afterExists and not afterIsPosseChannel and member.status == 'streaming' and after.channel.name[:11] != '(Streaming)':
+    print(f"Adding streaming prefix to channel {after.channel.name} at {datetime.datetime.now()}")
+    await channel.edit(name=f"(Streaming) {after.channel.name}", reason=f"{member.name} started streaming")
+    
   #print(f"Ended a on_voice_state_update at {datetime.datetime.now()}")
 
 ###########
@@ -212,6 +218,8 @@ async def on_presence_update(before, after):
     print(f"Started a on_presence_update streaming at {datetime.datetime.now()}")
     for channel in await bot.fetch_channel(887583365442715708).channels: # Channels in "Outside of Town" Category Channel
       if channel.ChannelType == 'voice' and after in channel.members:
+        print(f"Actually chaning the channel name at {datetime.datetime.now()}")
+        print(f"Adding streaming prefix to channel {channel.name} at {datetime.datetime.now()}")
         await channel.edit(name=f"(Streaming) {channel.name}", reason=f"{after.name} started streaming")
         return
 
