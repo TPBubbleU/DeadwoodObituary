@@ -220,7 +220,7 @@ async def spotify(ctx):
 
   linkview = View()
   linkview.add_item(Button(label="Click Here", url=link))
-  linkview.add_item(discord.ui.Select())
+  linkview.add_item(discord.ui.InputText(label="Enter key here: "))
   await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", ephemeral=True, view=linkview)
   
   
