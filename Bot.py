@@ -13,6 +13,7 @@ except KeyError:
   exit(1)
 
 secret_token = (os.environ["DISCORD_BOT_TOKEN"])
+spotify_secret = (os.environ["SPOTIFY_CLIENT_SECRET"])
 
 UsersLists = {}
 intents = discord.Intents.default()
@@ -71,7 +72,7 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
 
 def getUserData(id):
   if id not in UsersLists.keys():
-    UsersLists[id] = {"PosseList":[],"PosseName":None}
+    UsersLists[id] = {"PosseList":[],"PosseName":None, "SpotifyAccess":None}
   return UsersLists[id]
 
 @bot.slash_command(guild_ids=servers, name="rename-posse", description="Change the name of the voice channel when you round up a posse")
@@ -217,12 +218,37 @@ async def spotify(ctx):
   clientId = '19b73b32826642e19f33a70678a59ea5'
   scopes = 'user-read-private user-read-currently-playing user-modify-playback-state user-read-playback-position'
   link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
-
+  
+  userData = getUserData(ctx.author.id)
+  
+  last_song_button = Button(label="last song")
+  async def last_song_callback(interaction):
+    requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
+  last_song_button.callback = last_song_callback
+  
+  next_song_button = Button(label="next song")
+  async def next_song_callback(interaction):
+    requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
+  next_song_button.callback = next_song_callback
+  
+  command_view = View(last_song_button, next_song_button)
+  
   async def modal_for_button_click(interaction):
     modal = Modal(title="Lets get that input baby!")
     modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
     async def callback_for_modal(interaction):
-      await interaction.response.send_message(content="You are all setup", ephemeral=True)
+      body = {
+        'client_id':clientId,
+        'client_secret':SPOTIFY_CLIENT_SECRET,
+        'grant_type':'authorization_code',
+        'code':modal.children[0].value,
+        'redirect_uri':redirect
+      }
+      auth = requests.post('https://accounts.spotify.com/api/token', data=body).json()
+      
+      UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
+      view = View()
+      await interaction.response.send_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", ephemeral=True)
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   
