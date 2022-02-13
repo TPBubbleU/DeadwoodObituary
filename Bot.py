@@ -219,7 +219,7 @@ async def spotify(ctx):
   link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
 
   linkview = View()
-  linkview.additem(Button(label="Click Here", url=link))
+  linkview.add_item(Button(label="Click Here", url=link))
   await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", ephemeral=True, view=linkview)
   
   
