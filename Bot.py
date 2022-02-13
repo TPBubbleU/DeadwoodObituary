@@ -187,7 +187,7 @@ async def on_voice_state_update(member, before, after):
     await vc.disconnect(force=True)
     
   # Special Consideration for someone joining a channel that has already started streaming and the channels name doesn't start with streaming
-  if afterExists and not afterIsPosseChannel and member.status == 'streaming' and after.channel.name[:11] != '(Streaming)':
+  if afterExists and not afterIsPosseChannel and member.status == 'streaming': # and after.channel.name[:11] != '(Streaming)'
     print(f"Adding streaming prefix to channel {after.channel.name} at {datetime.datetime.now()}")
     await channel.edit(name=f"(Streaming) {after.channel.name}", reason=f"{member.name} started streaming")
     
@@ -203,6 +203,15 @@ async def loveletter(ctx, member1: discord.Option(discord.Member, required=True)
                           member3: discord.Option(discord.Member, required=False)):
   print(f"Started a love letter at {datetime.datetime.now()}")
   await ctx.respond(content="Started an LL game with  " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " ", ephemeral=True)
+  
+#############
+## Spotify ##
+#############
+  
+@bot.slash_command(guild_ids=servers, name="Spotify", description="Give chat control of your spotify")
+async def spotify(ctx):
+  print(f"Started a spotify controller at {datetime.datetime.now()}")
+  
   
 ##################
 ## Other Things ##
@@ -224,7 +233,7 @@ async def on_presence_update(before, after):
   if after.status == 'streaming':
     print(f"Started a on_presence_update streaming at {datetime.datetime.now()}")
     for channel in await bot.fetch_channel(887583365442715708).channels: # Channels in "Outside of Town" Category Channel
-      if channel.ChannelType == 'voice' and after in channel.members:
+      if channel.ChannelType == 'voice' and after in channel.members: # and channel.name[:11] != '(Streaming)'
         print(f"Actually chaning the channel name at {datetime.datetime.now()}")
         print(f"Adding streaming prefix to channel {channel.name} at {datetime.datetime.now()}")
         await channel.edit(name=f"(Streaming) {channel.name}", reason=f"{after.name} started streaming")
