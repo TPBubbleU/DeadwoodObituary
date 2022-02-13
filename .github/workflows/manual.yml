@@ -29,4 +29,5 @@ jobs:
     - name: Run the Docker image
       env:
         DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-      run: docker run -v /var/lib/mysql:/var/lib/mysql -d -e DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN --name discord_bot_live discord_bot:prod 
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+      run: docker run -v /var/lib/mysql:/var/lib/mysql -d -e DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET --name discord_bot_live discord_bot:prod 
