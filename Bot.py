@@ -220,7 +220,7 @@ async def spotify(ctx):
 
   async def modal_for_button_click(interaction):
     modal = Modal(title="Lets get that input baby!")
-    modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link')))
+    modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
     await interaction.response.send_modal(modal)
   
   linkview = View()
