@@ -2,6 +2,8 @@ import discord, datetime, asyncio, os, random, time
 from discord.ext import commands
 from discord.ui import Button, View
 from gtts import gTTS 
+import requests
+from urllib.parse import quote
 #from Games.LoveLetter import LLGame
 
 try:  
@@ -208,9 +210,17 @@ async def loveletter(ctx, member1: discord.Option(discord.Member, required=True)
 ## Spotify ##
 #############
   
-@bot.slash_command(guild_ids=servers, name="Spotify", description="Give chat control of your spotify")
+@bot.slash_command(guild_ids=servers, name="spotify", description="Give chat control of your spotify")
 async def spotify(ctx):
   print(f"Started a spotify controller at {datetime.datetime.now()}")
+  redirect = 'https://script.google.com/macros/s/AKfycbwQYNT3PFFuArWNXf5u4fc4R0tsKoC2fWJ2SneOQ-Jpn1sfD-AG/exec'
+  clientId = '19b73b32826642e19f33a70678a59ea5'
+  scopes = 'user-read-private user-read-currently-playing user-modify-playback-state user-read-playback-position'
+  link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
+
+  linkview = View()
+  linkview.additem(Button(label="Click Here", url=link))
+  await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", ephemeral=True, view=linkview)
   
   
 ##################
