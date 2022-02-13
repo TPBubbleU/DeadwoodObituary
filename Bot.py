@@ -239,7 +239,7 @@ async def spotify(ctx):
     async def callback_for_modal(interaction):
       body = {
         'client_id':clientId,
-        'client_secret':SPOTIFY_CLIENT_SECRET,
+        'client_secret':spotify_secret,
         'grant_type':'authorization_code',
         'code':modal.children[0].value,
         'redirect_uri':redirect
