@@ -1,6 +1,6 @@
 import discord, datetime, asyncio, os, random, time
 from discord.ext import commands
-from discord.ui import Button, View
+from discord.ui import Button, View, InputText, Modal
 from gtts import gTTS 
 import requests
 from urllib.parse import quote
@@ -218,9 +218,17 @@ async def spotify(ctx):
   scopes = 'user-read-private user-read-currently-playing user-modify-playback-state user-read-playback-position'
   link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
 
+  async def modal_for_button_click(interaction):
+    modal = Modal(title="Lets get that input baby!")
+    modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link')))
+    await interaction.response.send_modal(modal)
+  
   linkview = View()
+  modalSpawningButton = Button(label="Click Here", callback=modal_for_button_click)
+  
+  
   linkview.add_item(Button(label="Click Here", url=link))
-  linkview.add_item(discord.ui.InputText(label="Enter key here: ", style=discord.InputTextStyle.long))
+  linkview.add_item(modalSpawningButton)
   await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", ephemeral=True, view=linkview)
   
   
