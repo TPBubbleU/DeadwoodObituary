@@ -248,7 +248,7 @@ async def spotify(ctx):
       
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
       view = View()
-      await interaction.response.send_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", ephemeral=True)
+      await interaction.response.send_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", view=command_view)
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   
