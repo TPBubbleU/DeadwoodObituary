@@ -200,12 +200,12 @@ async def on_voice_state_update(member, before, after):
 ## Games ##
 ###########
   
-@bot.slash_command(guild_ids=servers, name="love_letter", description="play a game of love letter")
-async def loveletter(ctx, member1: discord.Option(discord.Member, required=True), 
-                          member2: discord.Option(discord.Member, required=False), 
-                          member3: discord.Option(discord.Member, required=False)):
-  print(f"Started a love letter at {datetime.datetime.now()}")
-  await ctx.respond(content="Started an LL game with  " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " ", ephemeral=True)
+# @bot.slash_command(guild_ids=servers, name="love_letter", description="play a game of love letter")
+# async def loveletter(ctx, member1: discord.Option(discord.Member, required=True), 
+#                           member2: discord.Option(discord.Member, required=False), 
+#                           member3: discord.Option(discord.Member, required=False)):
+#   print(f"Started a love letter at {datetime.datetime.now()}")
+#   await ctx.respond(content="Started an LL game with  " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " ", ephemeral=True)
   
 #############
 ## Spotify ##
@@ -277,8 +277,10 @@ async def spotify(ctx):
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
       embeds = [get_current_song_embed()]
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
+      await interaction.response.send_message(content=content, view=command_view, embeds=embeds)
       global response_we_care_about
-      response_we_care_about = await interaction.response.send_message(content=content, view=command_view, embeds=embeds)
+      response_we_care_about = interaction.response
+      
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   modal_spawning_button.callback = modal_for_button_click
