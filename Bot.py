@@ -1,8 +1,9 @@
-import discord, datetime, asyncio, os, random, time, requests
+import discord, datetime, asyncio, os, random, time, requests, 
 from discord.ext import commands
 from discord.ui import Button, View, InputText, Modal
 from gtts import gTTS 
 from urllib.parse import quote
+from threading import Timer
 #from Games.LoveLetter import LLGame
 
 try:  
@@ -220,9 +221,8 @@ async def spotify(ctx):
   link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
   userData = getUserData(ctx.author.id) # This sets up the user if they are not in memory already
   
-  
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
-  async def get_current_song_embed(refresh=True):
+  async def get_current_song_embed():
     # Get currently playing endpoint from spotify
     headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
     current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers).json()
@@ -232,11 +232,13 @@ async def spotify(ctx):
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
     embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
-#     # Lets setup a method to wait and then update the currently playing on our embed
-#     async def refresh_embeds_after(delay):
-#       time.sleep(delay)
-#       await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
-#     await asyncio.create_task(refresh_embeds_after(current_song['item']['duration_ms'] - current_song['progress_ms']))
+    # Lets setup a method to wait and then update the currently playing on our embed
+    wait_time = current_song['item']['duration_ms'] - current_song['progress_ms'] + 1000
+    async def refresh_embeds():
+      embed = await get_current_song_embed()
+      await ctx.interaction.edit_original_message(embeds=[embed])
+    timer = Timer(wait_time, refresh_embeds())
+    timer.start()
     return embed  
   
   # Setup the last song button and callback for later
