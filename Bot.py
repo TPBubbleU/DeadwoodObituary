@@ -270,8 +270,7 @@ async def spotify(ctx):
       
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
       embed = get_current_song_embed()
-      await ctx.interaction.edit_original_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", 
-                                                   ephemeral=False, view=command_view, embeds=[embed])
+      await ctx.interaction.edit_original_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", view=command_view, embeds=[embed])
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   
