@@ -223,11 +223,15 @@ async def spotify(ctx):
   
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
   def get_current_song_embed():
+    embed = discord.Embed(title="Currently Playing",color=discord.Color.blurple())
     # Get currently playing endpoint from spotify
     headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-    current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers).json()
+    r = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers)
+    if r.status_code == 204:
+      embed.add_field(name="Can't currently find anything playing")
+      return embed
+    current_song = r.json()
     # Build a whole embed with details from the song 
-    embed = discord.Embed(title="Currently Playing",color=discord.Color.blurple())
     embed.add_field(name="Song Name:", value=current_song['item']['name'], inline=True)
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
