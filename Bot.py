@@ -291,7 +291,7 @@ async def spotify(ctx):
       embed = await get_current_song_embed()
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.send_message() 
+      # await interaction.response.send_message() 
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   modal_setup_button.callback = modal_for_setup_click
