@@ -309,7 +309,7 @@ async def spotify(ctx):
       }
       auth = requests.post('https://accounts.spotify.com/api/token', data=body)
       print(auth.text)
-      print(auth.json()['access_token'])
+      #print(auth.json()['access_token'])
       # Save our access token into our user list object
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth.json()['access_token']
       # Lets update our original message
