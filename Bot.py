@@ -226,11 +226,11 @@ async def spotify(ctx):
     embed = discord.Embed(title="Currently Playing",color=discord.Color.blurple())
     # Get currently playing endpoint from spotify
     headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-    r = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers)
-    if r.status_code == 204:
+    sresponse = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers)
+    if sresponse.status_code == 204:
       embed.add_field(name="Song Name:", value="Can't currently find anything playing")
       return embed
-    current_song = r.json()
+    current_song = sresponse.json()
     # Build a whole embed with details from the song 
     embed.add_field(name="Song Name:", value=current_song['item']['name'], inline=True)
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
@@ -266,14 +266,17 @@ async def spotify(ctx):
   # Setup the queue a song button and callback for later
   queue_song_button = Button(label="Queue song")
   async def queue_song_callback(interaction):
-    modal = Modal(title="Auth code getter")
-    modal.add_item(InputText(label="What track are we searching for: "))
+    search_modal = Modal(title="Lets search")
+    search_modal.add_item(InputText(label="What track are we searching for: "))
     async def callback_for_modal(interaction):
       headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-      params = {'q':modal.children[0].value, 'type':'track', 'limit':10}
-      r = requests.post('https://api.spotify.com/v1/search', headers=headers, params=params).json()
+      params = {'q':search_modal.children[0].value, 'type':'track', 'limit':10}
+      sresponse = requests.post('https://api.spotify.com/v1/search', headers=headers, params=params)
+      print(sresponse.status_code)
+      print(sresponse.text)
+      results = sresponse.json()
       options = []
-      for track in r['tracks']['items']:
+      for track in results['tracks']['items']:
         artists = ", ".join([x['name'] for x in track['item']['artists']])
         options.append(discord.SelectOption(label=track['name'], description=f"Artist: {artists} Album:{track['album']['name']}"))
       search_select = discord.ui.Select(placeholder="Pick Your Modal", min_values=1, max_values=1, options=options)
@@ -294,21 +297,21 @@ async def spotify(ctx):
   
   # Lets setup our modal spawning button
   modal_setup_button = Button(label="Give code")
-  async def modal_for_setup_click(interaction):
+  async def modal_setup_button_click(interaction):
     # Early out if someone else responded other than the orignial slash command user.  
     if (interaction.user != ctx.author):
       interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
       return 
     # Lets build a Modal because this seems to be one of the few ways of getting input text from a user
-    modal = Modal(title="Auth code getter")
-    modal.add_item(InputText(label="Enter key here: ", min_length=10))
+    setup_modal = Modal(title="Auth code getter")
+    setup_modal.add_item(InputText(label="Enter key here: ", min_length=10))
     async def callback_for_modal(interaction):
       # Setup things to get the access token from Spotifys API
       body = {
         'client_id':clientId,
         'client_secret':spotify_secret,
         'grant_type':'authorization_code',
-        'code':modal.children[0].value,
+        'code':setup_modal.children[0].value,
         'redirect_uri':redirect
       }
       auth = requests.post('https://accounts.spotify.com/api/token', data=body)
@@ -322,9 +325,9 @@ async def spotify(ctx):
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
       await interaction.response.send_message("", delete_after=0) 
-    modal.callback = callback_for_modal
-    await interaction.response.send_modal(modal)
-  modal_setup_button.callback = modal_for_setup_click
+    setup_modal.callback = callback_for_modal
+    await interaction.response.send_modal(setup_modal)
+  modal_setup_button.callback = modal_setup_button_click
   
   # Lets build a view with our predefined modal spawning button and link to get the auth code
   setup_view = View(Button(label="Get Code", url=setup_url), modal_setup_button, timeout=None)
