@@ -271,7 +271,7 @@ async def spotify(ctx):
     async def callback_for_modal(interaction):
       headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
       params = {'q':search_modal.children[0].value, 'type':'track', 'limit':10}
-      sresponse = requests.post('https://api.spotify.com/v1/search', headers=headers, params=params)
+      sresponse = requests.get('https://api.spotify.com/v1/search', headers=headers, params=params)
       print(sresponse.status_code)
       print(sresponse.text)
       results = sresponse.json()
