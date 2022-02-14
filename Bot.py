@@ -214,51 +214,61 @@ async def on_voice_state_update(member, before, after):
 @bot.slash_command(guild_ids=servers, name="spotify", description="Give chat control of your spotify")
 async def spotify(ctx):
   print(f"Started a spotify controller at {datetime.datetime.now()}")
+  # Lets build our setup variables
   redirect = 'https://script.google.com/macros/s/AKfycbwQYNT3PFFuArWNXf5u4fc4R0tsKoC2fWJ2SneOQ-Jpn1sfD-AG/exec'
   clientId = '19b73b32826642e19f33a70678a59ea5'
   scopes = 'user-read-private user-read-currently-playing user-modify-playback-state user-read-playback-position'
   link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
-  userData = getUserData(ctx.author.id)
+  userData = getUserData(ctx.author.id) # This sets up the user if they are not in memory already
+  
   
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
-  def get_current_song_embed():
-    current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', 
-                                headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}).json()
+  def get_current_song_embed(refresh=True):
+    # Get currently playing endpoint from spotify
+    headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
+    current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers).json()
+    # Build a whole embed with details from the song 
     embed = discord.Embed(title="Currently Playing",color=discord.Color.blurple())
     embed.add_field(name="Song Name:", value=current_song['item']['name'], inline=True)
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
     embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
+    # Lets setup a method to wait and then update the currently playing on our embed
+    async def refresh_embeds_after(delay):
+      time.sleep(delay)
+      await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
+    await asyncio.create_task(refresh_embeds_after(current_song['item']['duration_ms'] - current_song['progress_ms']))
     return embed  
   
   # Setup the last song button and callback for later
   last_song_button = Button(label="last song")
   async def last_song_callback(interaction):
-    await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
-    time.sleep(2)
+    time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
     await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
   next_song_button = Button(label="next song")
   async def next_song_callback(interaction):
-    await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
-    time.sleep(2)
+    time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
     await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
   next_song_button.callback = next_song_callback
   
+  # Build our command view so other uses can use Spotify Commands
   command_view = View(last_song_button, next_song_button, timeout=None)
   
   # Lets setup our modal spawning button
-  modal_spawning_button = Button(label="Give code")
-  async def modal_for_button_click(interaction):
+  modal_setup_button = Button(label="Give code")
+  async def modal_for_setup_click(interaction):
+    # Early out if someone else responded other than the orignial slash command user.  
     if (interaction.user != ctx.author):
       interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
-      return # Early out if someone else responded other than the orignial slash command user.  
-    modal = Modal(title="Lets get that input baby!")
-    modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
+      return 
+    # Lets build a Modal because this seems to be one of the few ways of getting input text from a user
+    modal = Modal(title="Look at this janky thing where I can't even get the code so I have you provide it")
+    modal.add_item(InputText(label="Enter key here: ", value='Get this from the link'))
     async def callback_for_modal(interaction):
       # Setup things to get the access token from Spotifys API
       body = {
@@ -271,15 +281,17 @@ async def spotify(ctx):
       auth = requests.post('https://accounts.spotify.com/api/token', data=body).json()
       # Save our access token into our user list object
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
+      # Lets update our original message
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[get_current_song_embed()])
-      await interaction.response.send_message()
-      
+      # Lets respond to the modal interaction so it doesn't say it failed
+      await interaction.response.send_message() 
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
-  modal_spawning_button.callback = modal_for_button_click
+  modal_spawning_button.callback = modal_for_setup_click
   
-  setup_view = View(Button(label="Get Code", url=link), modal_spawning_button, timeout=None)
+  # Lets build a view with our predefined modal spawning button and link to get the auth code
+  setup_view = View(Button(label="Get Code", url=link), modal_setup_button, timeout=None)
   await ctx.respond(content=f"Lets start by getting you setup \nGo get a code from Spotify and give it back", view=setup_view)
   
 ##################
