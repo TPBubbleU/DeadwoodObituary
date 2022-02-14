@@ -266,7 +266,7 @@ async def spotify(ctx):
       interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
       return 
     # Lets build a Modal because this seems to be one of the few ways of getting input text from a user
-    modal = Modal(title="Look at this janky thing where I can't even get the code so I have you provide it")
+    modal = Modal(title="Auth code getter")
     modal.add_item(InputText(label="Enter key here: ", value='Get this from the link'))
     async def callback_for_modal(interaction):
       # Setup things to get the access token from Spotifys API
