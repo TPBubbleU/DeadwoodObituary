@@ -278,9 +278,10 @@ async def spotify(ctx):
         'code':modal.children[0].value,
         'redirect_uri':redirect
       }
-      auth = requests.post('https://accounts.spotify.com/api/token', data=body).json()
+      auth = requests.post('https://accounts.spotify.com/api/token', data=body)
+      print(auth.text)
       # Save our access token into our user list object
-      UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
+      UsersLists[ctx.author.id]['SpotifyAccess'] = auth.json()['access_token']
       # Lets update our original message
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[get_current_song_embed()])
