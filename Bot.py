@@ -271,7 +271,7 @@ async def spotify(ctx):
       return 
     # Lets build a Modal because this seems to be one of the few ways of getting input text from a user
     modal = Modal(title="Auth code getter")
-    modal.add_item(InputText(label="Enter key here: ", value='Get this from the link'))
+    modal.add_item(InputText(label="Enter key here: ", min_length=10))
     async def callback_for_modal(interaction):
       # Setup things to get the access token from Spotifys API
       body = {
@@ -291,7 +291,7 @@ async def spotify(ctx):
       embed = await get_current_song_embed()
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
-      # await interaction.response.send_message() 
+      await interaction.response.pong() 
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   modal_setup_button.callback = modal_for_setup_click
