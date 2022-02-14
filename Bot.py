@@ -259,31 +259,31 @@ async def spotify(ctx):
     await ctx.interaction.edit_original_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
-  # Setup the queue a song button and callback for later
-  queue_song_button = Button(label="Queue song")
-  async def queue_song_callback(interaction):
-    modal = Modal(title="Auth code getter")
-    modal.add_item(InputText(label="What track are we searching for: "))
-    async def callback_for_modal(interaction):
-      headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-      params = {'q':modal.children[0].value, 'type':'track', 'limit':10}
-      r = requests.post('https://api.spotify.com/v1/search', headers=headers, params=params).json()
-      options = []
-      for track in r['tracks']['items']:
-        artists = ", ".join([x['name'] for x in track['item']['artists']])
-        options.append(discord.SelectOption(label=track['name'], description=f"Artist: {artists} Album:{track['album']['name']}"))
-      search_select = discord.ui.Select(placeholder="Pick Your Modal", min_values=1, max_values=1, options=options)
+#   # Setup the queue a song button and callback for later
+#   queue_song_button = Button(label="Queue song")
+#   async def queue_song_callback(interaction):
+#     modal = Modal(title="Auth code getter")
+#     modal.add_item(InputText(label="What track are we searching for: "))
+#     async def callback_for_modal(interaction):
+#       headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
+#       params = {'q':modal.children[0].value, 'type':'track', 'limit':10}
+#       r = requests.post('https://api.spotify.com/v1/search', headers=headers, params=params).json()
+#       options = []
+#       for track in r['tracks']['items']:
+#         artists = ", ".join([x['name'] for x in track['item']['artists']])
+#         options.append(discord.SelectOption(label=track['name'], description=f"Artist: {artists} Album:{track['album']['name']}"))
+#       search_select = discord.ui.Select(placeholder="Pick Your Modal", min_values=1, max_values=1, options=options)
       
-      select_modal = Modal(title="This is what we found pick one")
-      select_modal.add_item(search_select)
-      async def callback_for_select_modal(interaction):
-        pass
-      select_modal.callback = callback_for_select_modal
-      await interaction.response.send_modal(select_modal)
+#       select_modal = Modal(title="This is what we found pick one")
+#       select_modal.add_item(search_select)
+#       async def callback_for_select_modal(interaction):
+#         pass
+#       select_modal.callback = callback_for_select_modal
+#       await interaction.response.send_modal(select_modal)
         
-    modal.callback = callback_for_modal
-    await interaction.response.send_modal(modal)
-  queue_song_button.callback = queue_song_callback
+#     modal.callback = callback_for_modal
+#     await interaction.response.send_modal(modal)
+#   queue_song_button.callback = queue_song_callback
   
   # Build our command view so other uses can use Spotify Commands
   command_view = View(last_song_button, next_song_button,  timeout=None)
