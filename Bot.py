@@ -259,7 +259,6 @@ async def spotify(ctx):
     if (interaction.user != ctx.author):
       interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
       return # Early out if someone else responded other than the orignial slash command user.  
-    await interaction.response.defer()
     modal = Modal(title="Lets get that input baby!")
     modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
     async def callback_for_modal(interaction):
