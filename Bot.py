@@ -229,7 +229,7 @@ async def spotify(ctx):
     embed.add_field(name="Song Name:", value=current_song['item']['name'], inline=True)
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
-    embed.add_field(name="Link:" value=current_song['item']['external_urls']['spotify'], inline=True)'
+    embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
     return embed  
   
   # Setup the last song button and callback for later
