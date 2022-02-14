@@ -288,7 +288,7 @@ async def spotify(ctx):
       await interaction.response.send_message() 
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
-  modal_spawning_button.callback = modal_for_setup_click
+  modal_setup_button.callback = modal_for_setup_click
   
   # Lets build a view with our predefined modal spawning button and link to get the auth code
   setup_view = View(Button(label="Get Code", url=link), modal_setup_button, timeout=None)
