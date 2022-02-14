@@ -235,22 +235,22 @@ async def spotify(ctx):
   # Setup the last song button and callback for later
   last_song_button = Button(label="last song")
   async def last_song_callback(interaction):
-    await interaction.response.defer()
+    #await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
     embed = get_current_song_embed()
-    await interaction.response.edit_message(embeds=[embed])
+    await ctx.interaction.edit_original_message(embeds=[embed])
     
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
   next_song_button = Button(label="next song")
   async def next_song_callback(interaction):
-    await interaction.response.defer()
+    #await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
     embed = get_current_song_embed()
-    await interaction.response.edit_message(embeds=[embed])
+    await ctx.interaction.edit_original_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
   command_view = View(last_song_button, next_song_button, timeout=None)
@@ -270,7 +270,8 @@ async def spotify(ctx):
       
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
       embed = get_current_song_embed()
-      await interaction.response.send_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", view=command_view, embeds=[embed])
+      await ctx.interaction.edit_original_message((content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", 
+                                                   ephemeral=False, view=command_view, embeds=[embed])
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   
