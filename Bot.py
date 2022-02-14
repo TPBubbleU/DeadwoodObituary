@@ -236,7 +236,7 @@ async def spotify(ctx):
   async def last_song_callback(interaction):
     await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
-    time.sleep(5)
+    time.sleep(2)
     await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
   last_song_button.callback = last_song_callback
   
@@ -245,14 +245,14 @@ async def spotify(ctx):
   async def next_song_callback(interaction):
     await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
-    time.sleep(5)
+    time.sleep(2)
     await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
   next_song_button.callback = next_song_callback
   
   command_view = View(last_song_button, next_song_button, timeout=None)
   
   # Lets setup our modal spawning button
-  modal_spawning_button = Button(label="Click Here for input")
+  modal_spawning_button = Button(label="Give code")
   async def modal_for_button_click(interaction):
     if (interaction.user != ctx.author):
       interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
@@ -274,14 +274,13 @@ async def spotify(ctx):
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[get_current_song_embed()])
-      await interaction.response.pong()
       
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   modal_spawning_button.callback = modal_for_button_click
   
-  setup_view = View(Button(label="Click Here for link", url=link), modal_spawning_button, timeout=None)
-  await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", view=setup_view)
+  setup_view = View(Button(label="Get Code", url=link), modal_spawning_button, timeout=None)
+  await ctx.respond(content=f"Lets start by getting you setup \nGo get a code from Spotify and give it back", view=setup_view)
   
 ##################
 ## Other Things ##
