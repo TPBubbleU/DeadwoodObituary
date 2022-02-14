@@ -232,11 +232,11 @@ async def spotify(ctx):
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
     embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
-    # Lets setup a method to wait and then update the currently playing on our embed
-    async def refresh_embeds_after(delay):
-      time.sleep(delay)
-      await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
-    await asyncio.create_task(refresh_embeds_after(current_song['item']['duration_ms'] - current_song['progress_ms']))
+#     # Lets setup a method to wait and then update the currently playing on our embed
+#     async def refresh_embeds_after(delay):
+#       time.sleep(delay)
+#       await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
+#     await asyncio.create_task(refresh_embeds_after(current_song['item']['duration_ms'] - current_song['progress_ms']))
     return embed  
   
   # Setup the last song button and callback for later
