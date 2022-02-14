@@ -218,7 +218,7 @@ async def spotify(ctx):
   redirect = 'https://script.google.com/macros/s/AKfycbwQYNT3PFFuArWNXf5u4fc4R0tsKoC2fWJ2SneOQ-Jpn1sfD-AG/exec'
   clientId = '19b73b32826642e19f33a70678a59ea5'
   scopes = 'user-read-private user-read-currently-playing user-modify-playback-state user-read-playback-position'
-  link = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
+  setup_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
   userData = getUserData(ctx.author.id) # This sets up the user if they are not in memory already
   
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
@@ -232,13 +232,13 @@ async def spotify(ctx):
     embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
     embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
-    # Lets setup a method to wait and then update the currently playing on our embed
-    wait_time = current_song['item']['duration_ms'] - current_song['progress_ms'] + 2000
-    async def refresh_embeds():
-      embed = get_current_song_embed()
-      await ctx.interaction.edit_original_message(embeds=[embed])
-    timer = Timer(wait_time, refresh_embeds())
-    timer.start()
+#     # Lets setup a method to wait and then update the currently playing on our embed
+#     wait_time = current_song['item']['duration_ms'] - current_song['progress_ms'] + 2000
+#     async def refresh_embeds():
+#       embed = get_current_song_embed()
+#       await ctx.interaction.edit_original_message(embeds=[embed])
+#     timer = Timer(wait_time, refresh_embeds())
+#     timer.start()
     return embed  
   
   # Setup the last song button and callback for later
@@ -323,7 +323,7 @@ async def spotify(ctx):
   modal_setup_button.callback = modal_for_setup_click
   
   # Lets build a view with our predefined modal spawning button and link to get the auth code
-  setup_view = View(Button(label="Get Code", url=link), modal_setup_button, timeout=None)
+  setup_view = View(Button(label="Get Code", url=setup_url), modal_setup_button, timeout=None)
   await ctx.respond(content=f"Lets start by getting you setup \nGo get a code from Spotify and give it back", view=setup_view)
   
 ##################
