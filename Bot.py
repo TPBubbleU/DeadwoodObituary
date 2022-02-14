@@ -221,14 +221,32 @@ async def spotify(ctx):
   
   userData = getUserData(ctx.author.id)
   
+  # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
+  def get_current_song_embed():
+    current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', 
+                                headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}).json()
+    embed = discord.Embed(title="Currently Playing",color=discord.Color.blurple())
+    embed.add_field(name="Song Name:", value=current_song['item']['name'], inline=True)
+    embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
+    embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
+    embed.add_field(name="Link:" value=current_song['item']['external_urls']['spotify'], inline=True)'
+    return embed  
+  
+  # Setup the last song button and callback for later
   last_song_button = Button(label="last song")
   async def last_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
+    embed = get_current_song_embed()
+    await interaction.response.edit_message(embeds=[embed])
+    
   last_song_button.callback = last_song_callback
   
+  # Setup the next song button and callback for later
   next_song_button = Button(label="next song")
   async def next_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
+    embed = get_current_song_embed()
+    await interaction.response.edit_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
   command_view = View(last_song_button, next_song_button)
@@ -247,8 +265,8 @@ async def spotify(ctx):
       auth = requests.post('https://accounts.spotify.com/api/token', data=body).json()
       
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
-      view = View()
-      await interaction.response.send_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", view=command_view)
+      embed = get_current_song_embed()
+      await interaction.response.send_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", view=command_view, embeds=[embed])
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
   
