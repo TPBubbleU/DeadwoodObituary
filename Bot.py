@@ -236,6 +236,7 @@ async def spotify(ctx):
   last_song_button = Button(label="last song")
   async def last_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
+    time.sleep(5)
     embed = get_current_song_embed()
     await interaction.response.edit_message(embeds=[embed])
     
@@ -245,11 +246,12 @@ async def spotify(ctx):
   next_song_button = Button(label="next song")
   async def next_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
+    time.sleep(5)
     embed = get_current_song_embed()
     await interaction.response.edit_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
-  command_view = View(last_song_button, next_song_button)
+  command_view = View(last_song_button, next_song_button, timeout=None)
   
   async def modal_for_button_click(interaction):
     modal = Modal(title="Lets get that input baby!")
