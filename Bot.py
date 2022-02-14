@@ -234,21 +234,21 @@ async def spotify(ctx):
   # Setup the last song button and callback for later
   last_song_button = Button(label="last song")
   async def last_song_callback(interaction):
-    #await interaction.response.defer()
+    await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
-    embeds = [get_current_song_embed()]
-    await ctx.interaction.edit_original_message(embeds=embeds)
+    await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
+    await interaction.response.pong()
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
   next_song_button = Button(label="next song")
   async def next_song_callback(interaction):
-    #await interaction.response.defer()
+    await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
-    embeds = [get_current_song_embed()]
-    await ctx.interaction.edit_original_message(embeds=embeds)
+    await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
+    await interaction.response.pong()
   next_song_button.callback = next_song_callback
   
   command_view = View(last_song_button, next_song_button, timeout=None)
@@ -259,10 +259,11 @@ async def spotify(ctx):
     if (interaction.user != ctx.author):
       interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
       return # Early out if someone else responded other than the orignial slash command user.  
-    
+    await interaction.response.defer()
     modal = Modal(title="Lets get that input baby!")
     modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
     async def callback_for_modal(interaction):
+      await interaction.response.defer()
       # Setup things to get the access token from Spotifys API
       body = {
         'client_id':clientId,
@@ -274,9 +275,9 @@ async def spotify(ctx):
       auth = requests.post('https://accounts.spotify.com/api/token', data=body).json()
       # Save our access token into our user list object
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
-      embeds = [get_current_song_embed()]
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
-      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=embeds)
+      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[get_current_song_embed()])
+      await interaction.response.pong()
       
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
