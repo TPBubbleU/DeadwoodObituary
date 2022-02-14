@@ -271,7 +271,7 @@ async def spotify(ctx):
       options = []
       for track in r['tracks']['items']:
         artists = ", ".join([x['name'] for x in track['item']['artists']])
-        options.append(discord.SelectOption(label=track['name'], description=f"Artist: {artists} Album:{track['album']['name']}")
+        options.append(discord.SelectOption(label=track['name'], description=f"Artist: {artists} Album:{track['album']['name']}"))
       search_select = discord.ui.Select(placeholder="Pick Your Modal", min_values=1, max_values=1, options=options)
       
       select_modal = Modal(title="This is what we found pick one")
