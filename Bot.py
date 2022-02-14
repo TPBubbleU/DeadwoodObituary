@@ -290,7 +290,7 @@ async def spotify(ctx):
   queue_song_button.callback = queue_song_callback
   
   # Build our command view so other uses can use Spotify Commands
-  command_view = View(last_song_button, next_song_button,  timeout=None)
+  command_view = View(last_song_button, next_song_button, queue_song_button, timeout=None)
   
   # Lets setup our modal spawning button
   modal_setup_button = Button(label="Give code")
