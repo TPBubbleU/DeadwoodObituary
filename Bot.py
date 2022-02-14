@@ -222,7 +222,7 @@ async def spotify(ctx):
   userData = getUserData(ctx.author.id) # This sets up the user if they are not in memory already
   
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
-  async def get_current_song_embed():
+  def get_current_song_embed():
     # Get currently playing endpoint from spotify
     headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
     current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers).json()
@@ -233,9 +233,9 @@ async def spotify(ctx):
     embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
     embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
     # Lets setup a method to wait and then update the currently playing on our embed
-    wait_time = current_song['item']['duration_ms'] - current_song['progress_ms'] + 1000
+    wait_time = current_song['item']['duration_ms'] - current_song['progress_ms'] + 2000
     async def refresh_embeds():
-      embed = await get_current_song_embed()
+      embed = get_current_song_embed()
       await ctx.interaction.edit_original_message(embeds=[embed])
     timer = Timer(wait_time, refresh_embeds())
     timer.start()
@@ -246,7 +246,7 @@ async def spotify(ctx):
   async def last_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    embed = await get_current_song_embed()
+    embed = get_current_song_embed()
     await ctx.interaction.edit_original_message(embeds=[embed])
   last_song_button.callback = last_song_callback
   
@@ -255,7 +255,7 @@ async def spotify(ctx):
   async def next_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    embed = await get_current_song_embed()
+    embed = get_current_song_embed()
     await ctx.interaction.edit_original_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
@@ -314,7 +314,7 @@ async def spotify(ctx):
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth.json()['access_token']
       # Lets update our original message
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
-      embed = await get_current_song_embed()
+      embed = get_current_song_embed()
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
       await interaction.response.send_message("", delete_after=0) 
