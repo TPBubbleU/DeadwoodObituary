@@ -237,7 +237,7 @@ async def spotify(ctx):
   # Setup the last song button and callback for later
   last_song_button = Button(label="last song")
   async def last_song_callback(interaction):
-    await interaction.response.defer()
+    #await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
     embeds = [get_current_song_embed()]
@@ -247,7 +247,7 @@ async def spotify(ctx):
   # Setup the next song button and callback for later
   next_song_button = Button(label="next song")
   async def next_song_callback(interaction):
-    await interaction.response.defer()
+    #await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
     embeds = [get_current_song_embed()]
