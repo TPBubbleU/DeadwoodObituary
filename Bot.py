@@ -228,7 +228,7 @@ async def spotify(ctx):
     headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
     r = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers)
     if r.status_code == 204:
-      embed.add_field(name="Can't currently find anything playing")
+      embed.add_field(name="Song Name:", value="Can't currently find anything playing")
       return embed
     current_song = r.json()
     # Build a whole embed with details from the song 
