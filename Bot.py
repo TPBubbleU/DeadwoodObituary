@@ -260,6 +260,7 @@ async def spotify(ctx):
     modal = Modal(title="Lets get that input baby!")
     modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
     async def callback_for_modal(interaction):
+      await interaction.response.pong()
       # Setup things to get the access token from Spotifys API
       body = {
         'client_id':clientId,
@@ -273,7 +274,7 @@ async def spotify(ctx):
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[get_current_song_embed()])
-      await interaction.response.pong()
+      
       
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
