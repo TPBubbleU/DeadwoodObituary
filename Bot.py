@@ -244,7 +244,8 @@ async def spotify(ctx):
   async def last_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
+    embed = await get_current_song_embed()
+    await ctx.interaction.edit_original_message(embeds=[embed])
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
@@ -252,7 +253,8 @@ async def spotify(ctx):
   async def next_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
+    embed = await get_current_song_embed()
+    await ctx.interaction.edit_original_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
   # Build our command view so other uses can use Spotify Commands
@@ -279,11 +281,13 @@ async def spotify(ctx):
       }
       auth = requests.post('https://accounts.spotify.com/api/token', data=body)
       print(auth.text)
+      print(auth.json()['access_token'])
       # Save our access token into our user list object
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth.json()['access_token']
       # Lets update our original message
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
-      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[await get_current_song_embed()])
+      embed = await get_current_song_embed()
+      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
       await interaction.response.send_message() 
     modal.callback = callback_for_modal
