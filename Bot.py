@@ -1,8 +1,7 @@
-import discord, datetime, asyncio, os, random, time
+import discord, datetime, asyncio, os, random, time, requests
 from discord.ext import commands
 from discord.ui import Button, View, InputText, Modal
 from gtts import gTTS 
-import requests
 from urllib.parse import quote
 #from Games.LoveLetter import LLGame
 
@@ -190,7 +189,7 @@ async def on_voice_state_update(member, before, after):
     await vc.disconnect(force=True)
     
   # Special Consideration for someone joining a channel that has already started streaming and the channels name doesn't start with streaming
-  if afterExists and not afterIsPosseChannel and member.status == 'streaming': # and after.channel.name[:11] != '(Streaming)'
+  if afterExists and not afterIsPosseChannel and member.status == discord.Status.streaming: # and after.channel.name[:11] != '(Streaming)'
     print(f"Adding streaming prefix to channel {after.channel.name} at {datetime.datetime.now()}")
     await channel.edit(name=f"(Streaming) {after.channel.name}", reason=f"{member.name} started streaming")
     
@@ -223,7 +222,7 @@ async def spotify(ctx):
   
   
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
-  def get_current_song_embed(refresh=True):
+  async def get_current_song_embed(refresh=True):
     # Get currently playing endpoint from spotify
     headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
     current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers).json()
@@ -236,7 +235,7 @@ async def spotify(ctx):
     # Lets setup a method to wait and then update the currently playing on our embed
     async def refresh_embeds_after(delay):
       time.sleep(delay)
-      await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
+      await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
     await asyncio.create_task(refresh_embeds_after(current_song['item']['duration_ms'] - current_song['progress_ms']))
     return embed  
   
@@ -245,7 +244,7 @@ async def spotify(ctx):
   async def last_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
+    await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
@@ -253,7 +252,7 @@ async def spotify(ctx):
   async def next_song_callback(interaction):
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    await ctx.interaction.edit_original_message(embeds=[get_current_song_embed()])
+    await ctx.interaction.edit_original_message(embeds=[await get_current_song_embed()])
   next_song_button.callback = next_song_callback
   
   # Build our command view so other uses can use Spotify Commands
@@ -284,7 +283,7 @@ async def spotify(ctx):
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth.json()['access_token']
       # Lets update our original message
       content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
-      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[get_current_song_embed()])
+      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[await get_current_song_embed()])
       # Lets respond to the modal interaction so it doesn't say it failed
       await interaction.response.send_message() 
     modal.callback = callback_for_modal
@@ -312,7 +311,7 @@ async def on_ready():
   
 @bot.event
 async def on_presence_update(before, after):
-  if after.status == 'streaming':
+  if after.status == discord.Status.streaming:
     print(f"Started a on_presence_update streaming at {datetime.datetime.now()}")
     for channel in await bot.fetch_channel(887583365442715708).channels: # Channels in "Outside of Town" Category Channel
       if channel.ChannelType == 'voice' and after in channel.members: # and channel.name[:11] != '(Streaming)'
