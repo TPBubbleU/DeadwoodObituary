@@ -221,6 +221,8 @@ async def spotify(ctx):
   
   userData = getUserData(ctx.author.id)
   
+  response_we_care_about = None
+  
   # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
   def get_current_song_embed():
     current_song = requests.get('https://api.spotify.com/v1/me/player/currently-playing', 
@@ -238,9 +240,8 @@ async def spotify(ctx):
     #await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
-    embed = get_current_song_embed()
-    await ctx.interaction.edit_original_message(embeds=[embed])
-    
+    embeds = [get_current_song_embed()]
+    await interaction.edit_original_message(embeds=embeds)
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
@@ -249,16 +250,21 @@ async def spotify(ctx):
     #await interaction.response.defer()
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(5)
-    embed = get_current_song_embed()
-    await ctx.interaction.edit_original_message(embeds=[embed])
+    embeds = [get_current_song_embed()]
+    await interaction.edit_original_message(embeds=embeds)
   next_song_button.callback = next_song_callback
   
   command_view = View(last_song_button, next_song_button, timeout=None)
   
+  
+  
+  # Lets setup our modal spawning button
+  modal_spawning_button = Button(label="Click Here for input")
   async def modal_for_button_click(interaction):
     modal = Modal(title="Lets get that input baby!")
     modal.add_item(InputText(label="Enter key here: ", value= 'Get this from the link'))
     async def callback_for_modal(interaction):
+      # Setup things to get the access token from Spotifys API
       body = {
         'client_id':clientId,
         'client_secret':spotify_secret,
@@ -267,21 +273,17 @@ async def spotify(ctx):
         'redirect_uri':redirect
       }
       auth = requests.post('https://accounts.spotify.com/api/token', data=body).json()
-      
+      # Save our access token into our user list object
       UsersLists[ctx.author.id]['SpotifyAccess'] = auth['access_token']
-      embed = get_current_song_embed()
-      await ctx.interaction.edit_original_message(content=f"{ctx.author} has decided to live dangerously and give control of his spotify to chat ", view=command_view, embeds=[embed])
+      embeds = [get_current_song_embed()]
+      content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
+      response_we_care_about = await interaction.respond(content=content, view=command_view, embeds=embeds)
     modal.callback = callback_for_modal
     await interaction.response.send_modal(modal)
+  modal_spawning_button.callback = modal_for_button_click
   
-  linkview = View(timeout=None)
-  modalSpawningButton = Button(label="Click Here for input")
-  modalSpawningButton.callback = modal_for_button_click
-  
-  linkview.add_item(Button(label="Click Here for link", url=link))
-  linkview.add_item(modalSpawningButton)
-  await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", ephemeral=True, view=linkview)
-  
+  setup_view = View(Button(label="Click Here for link", url=link), modal_spawning_button, timeout=None)
+  await ctx.respond(content=f"Lets start by getting you setup \nYou can use this link to get a new auth token", ephemeral=True, view=setup_view)
   
 ##################
 ## Other Things ##
