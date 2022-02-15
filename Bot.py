@@ -279,7 +279,7 @@ async def spotify(ctx):
         options.append(discord.SelectOption(label=track['name'], 
                                             description=f"Artist: {artists} Album:{track['album']['name']}",
                                             value=track['uri']))
-      search_select = discord.ui.Select(placeholder="Pick Your Modal", min_values=1, max_values=1, options=options)
+      search_select = discord.ui.Select(placeholder="Pick a track", min_values=1, max_values=1, options=options)
       async def search_select_callback(interaction):
         headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
         params = {'uri':search_select.values[0]}
@@ -288,6 +288,8 @@ async def spotify(ctx):
       search_select.callback = search_select_callback
       search_view = View(search_select, timeout=None)
       await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, view=search_view)
+      # Lets respond to the modal interaction so it doesn't say it failed
+      await interaction.response.send_message(" ", delete_after=0) 
       
     search_modal.callback = callback_for_modal
     await interaction.response.send_modal(search_modal)
@@ -325,7 +327,7 @@ async def spotify(ctx):
       embed = get_current_song_embed()
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.send_message("", delete_after=0) 
+      await interaction.response.send_message(" ", delete_after=0) 
     setup_modal.callback = callback_for_modal
     await interaction.response.send_modal(setup_modal)
   modal_setup_button.callback = modal_setup_button_click
