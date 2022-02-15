@@ -289,12 +289,12 @@ async def spotify(ctx):
       search_view = View(search_select, timeout=None)
       await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, view=search_view)
       # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.edit_message() 
+      interaction.response.is_done() 
       
     search_modal.callback = callback_for_modal
     await interaction.response.send_modal(search_modal)
     # Lets respond to the modal interaction so it doesn't say it failed
-    await interaction.response.edit_message() 
+    await interaction.response.is_done() 
   queue_song_button.callback = queue_song_callback
   
   # Build our command view so other uses can use Spotify Commands
@@ -329,7 +329,7 @@ async def spotify(ctx):
       embed = get_current_song_embed()
       await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
       # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.edit_message() 
+      interaction.response.is_done() 
     setup_modal.callback = callback_for_modal
     await interaction.response.send_modal(setup_modal)
   modal_setup_button.callback = modal_setup_button_click
