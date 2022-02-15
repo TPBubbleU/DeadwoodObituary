@@ -284,7 +284,7 @@ async def spotify(ctx):
         headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
         params = {'uri':search_select.values[0]}
         sresponse = requests.post("https://api.spotify.com/v1/me/player/queue", headers=headers, params=params)
-        song_name = [x['name'] for x in options if x['value'] == search_select.values[0]][0]
+        song_name = [x.label for x in options if x.value == search_select.values[0]][0]
         await interaction.response.edit_message(content=f"Added {song_name} to queue", view=None)
       search_select.callback = search_select_callback
       search_view = View(search_select, timeout=None)
