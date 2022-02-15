@@ -252,6 +252,7 @@ async def spotify(ctx):
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
     embed = get_current_song_embed()
     await ctx.interaction.edit_original_message(embeds=[embed])
+    await interaction.respond()
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
@@ -261,6 +262,7 @@ async def spotify(ctx):
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
     embed = get_current_song_embed()
     await ctx.interaction.edit_original_message(embeds=[embed])
+    await interaction.respond()
   next_song_button.callback = next_song_callback
   
   # Setup the queue a song button and callback for later
@@ -285,14 +287,16 @@ async def spotify(ctx):
         params = {'uri':search_select.values[0]}
         sresponse = requests.post("https://api.spotify.com/v1/me/player/queue", headers=headers, params=params)
         await interaction.edit_original_message(content="Added to queue")
+        await interaction.respond()
       search_select.callback = search_select_callback
       search_view = View(search_select, timeout=None)
       await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, view=search_view)
       # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.send_message(" ", delete_after=0) 
+      await interaction.respond()
       
     search_modal.callback = callback_for_modal
     await interaction.response.send_modal(search_modal)
+    await interaction.respond()
   queue_song_button.callback = queue_song_callback
   
   # Build our command view so other uses can use Spotify Commands
