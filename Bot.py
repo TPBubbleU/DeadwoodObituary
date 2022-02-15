@@ -272,22 +272,23 @@ async def spotify(ctx):
       headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
       params = {'q':search_modal.children[0].value, 'type':'track', 'limit':10}
       sresponse = requests.get('https://api.spotify.com/v1/search', headers=headers, params=params)
-      print(sresponse.status_code)
-      print(sresponse.text)
       results = sresponse.json()
       options = []
       for track in results['tracks']['items']:
         artists = ", ".join([x['name'] for x in track['item']['artists']])
-        options.append(discord.SelectOption(label=track['name'], description=f"Artist: {artists} Album:{track['album']['name']}"))
+        options.append(discord.SelectOption(label=track['name'], 
+                                            description=f"Artist: {artists} Album:{track['album']['name']}",
+                                            value=track['uri']))
       search_select = discord.ui.Select(placeholder="Pick Your Modal", min_values=1, max_values=1, options=options)
+      async def search_select_callback(interaction):
+        headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
+        params = {'uri':search_select.values[0]}
+        sresponse = requests.post("https://api.spotify.com/v1/me/player/queue", headers=headers, params=params)
+        await interaction.edit_original_message(content="Added to queue")
+      search_select.callback = search_select_callback
+      search_view = View(search_selecttimeout=None))
+      await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, content=content, view=search_view)
       
-      select_modal = Modal(title="This is what we found, pick one")
-      select_modal.add_item(search_select)
-      async def callback_for_select_modal(interaction):
-        pass
-      select_modal.callback = callback_for_select_modal
-      await interaction.response.send_modal(select_modal)
-        
     search_modal.callback = callback_for_modal
     await interaction.response.send_modal(search_modal)
   queue_song_button.callback = queue_song_callback
