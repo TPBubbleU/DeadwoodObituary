@@ -275,7 +275,7 @@ async def spotify(ctx):
       results = sresponse.json()
       options = []
       for track in results['tracks']['items']:
-        artists = ", ".join([x['name'] for x in track['item']['artists']])
+        artists = ", ".join([x['name'] for x in track['artists']])
         options.append(discord.SelectOption(label=track['name'], 
                                             description=f"Artist: {artists} Album:{track['album']['name']}",
                                             value=track['uri']))
