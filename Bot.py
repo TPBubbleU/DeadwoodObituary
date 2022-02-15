@@ -287,7 +287,7 @@ async def spotify(ctx):
         await interaction.edit_original_message(content="Added to queue")
       search_select.callback = search_select_callback
       search_view = View(search_selecttimeout=None)
-      await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, content=content, view=search_view)
+      await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, view=search_view)
       
     search_modal.callback = callback_for_modal
     await interaction.response.send_modal(search_modal)
