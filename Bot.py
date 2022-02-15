@@ -286,7 +286,7 @@ async def spotify(ctx):
         sresponse = requests.post("https://api.spotify.com/v1/me/player/queue", headers=headers, params=params)
         await interaction.edit_original_message(content="Added to queue")
       search_select.callback = search_select_callback
-      search_view = View(search_selecttimeout=None)
+      search_view = View(search_select, timeout=None)
       await ctx.interaction.followup.send(content="Here is what we found", ephemeral=True, view=search_view)
       
     search_modal.callback = callback_for_modal
