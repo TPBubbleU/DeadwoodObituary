@@ -288,9 +288,7 @@ async def spotify(ctx):
         await interaction.response.edit_message(content=f"Added {song_name} to queue", view=None)
       search_select.callback = search_select_callback
       search_view = View(search_select, timeout=None)
-      await ctx.interaction.followup.send(content=f"Here is what we found for the search of {search_modal.children[0].value}", ephemeral=True, view=search_view)
-      # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.send_message(".",delete_after=0)
+      await interaction.response.send_message(content=f"Here is what we found for the search of {search_modal.children[0].value}", ephemeral=True, view=search_view)
       
     search_modal.callback = callback_for_modal
     await interaction.response.send_modal(search_modal)
