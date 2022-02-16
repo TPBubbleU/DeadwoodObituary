@@ -251,7 +251,7 @@ async def spotify(ctx):
     requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
     embed = get_current_song_embed()
-    await ctx.interaction.edit_original_message(embeds=[embed])
+    await interaction.edit_original_message(embeds=[embed])
   last_song_button.callback = last_song_callback
   
   # Setup the next song button and callback for later
@@ -260,7 +260,7 @@ async def spotify(ctx):
     requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
     time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
     embed = get_current_song_embed()
-    await ctx.interaction.edit_original_message(embeds=[embed])
+    await interaction.edit_original_message(embeds=[embed])
   next_song_button.callback = next_song_callback
   
   # Setup the queue a song button and callback for later
@@ -276,8 +276,9 @@ async def spotify(ctx):
       options = []
       for track in results['tracks']['items']:
         artists = ", ".join([x['name'] for x in track['artists']])
+        custom_descrpition = f"Artist: {artists} Album:{track['album']['name']}"
         options.append(discord.SelectOption(label=track['name'], 
-                                            description=f"Artist: {artists} Album:{track['album']['name']}",
+                                            description=custom_descrpition[:100], # descriptions have a max length of 100
                                             value=track['uri']))
       search_select = discord.ui.Select(placeholder="Pick a track", min_values=1, max_values=1, options=options)
       async def search_select_callback(interaction):
