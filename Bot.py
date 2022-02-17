@@ -51,14 +51,21 @@ servers = [882043693274628167]
   
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
-                         , text: discord.Option(str, required=True)):
+                         , text: discord.Option(str, required=True)
+                         , attachment: discord.Option(discord.Attachment,required=False)):
   print(f"Started a say command at {datetime.datetime.now()} for {ctx.author} channel of {channel} text of {text}")
-  interaction = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
-  # Lets make and save a voice to text mp3
-  gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
+  if attachment and attachment.filename == '.mp3':
+    file = await attachment.to_file()
+    interaction = await ctx.respond(content=f"Playing '{attachment.filename}' to channel '{channel}'", ephemeral=True)
+    player = vc.play(discord.FFmpegPCMAudio(source=file.fp))
+  else:
+    # Lets make and save a voice to text mp3
+    gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
+    player = vc.play(discord.FFmpegPCMAudio(source="voicechat.mp3"))
+    interaction = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
+  
   # Connect and play the file
   vc = await channel.connect()
-  player = vc.play(discord.FFmpegPCMAudio(source="voicechat.mp3"))
   # Wait until the file is done playing
   while vc.is_playing():
     time.sleep(1)
