@@ -54,7 +54,7 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
                          , text: discord.Option(str, required=True)
                          , attachment: discord.Option(discord.Attachment,required=False)):
   print(f"Started a say command at {datetime.datetime.now()} for {ctx.author} channel of {channel} text of {text}")
-  if attachment and attachment.filename == '.mp3':
+  if attachment and attachment.filename[-4:] in ['.mp3','.wav']:
     file = await attachment.to_file()
     interaction = await ctx.respond(content=f"Playing '{attachment.filename}' to channel '{channel}'", ephemeral=True)
     player = vc.play(discord.FFmpegPCMAudio(source=file.fp))
