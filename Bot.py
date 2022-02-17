@@ -59,7 +59,7 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
     interaction = await ctx.respond(content=f"Playing '{attachment.filename}' to channel '{channel}'", ephemeral=True)
     # Connect and play the file
     vc = await channel.connect()
-    player = vc.play(discord.FFmpegPCMAudio(source=file.fp))
+    player = vc.play(discord.FFmpegPCMAudio(source=file.fp, pipe=True))
   else:
     interaction = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
     # Lets make and save a voice to text mp3
