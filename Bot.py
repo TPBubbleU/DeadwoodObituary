@@ -57,15 +57,17 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
   if attachment and attachment.filename[-4:] in ['.mp3','.wav']:
     file = await attachment.to_file()
     interaction = await ctx.respond(content=f"Playing '{attachment.filename}' to channel '{channel}'", ephemeral=True)
+    # Connect and play the file
+    vc = await channel.connect()
     player = vc.play(discord.FFmpegPCMAudio(source=file.fp))
   else:
+    interaction = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
     # Lets make and save a voice to text mp3
     gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
+    # Connect and play the file
+    vc = await channel.connect()
     player = vc.play(discord.FFmpegPCMAudio(source="voicechat.mp3"))
-    interaction = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
-  
-  # Connect and play the file
-  vc = await channel.connect()
+    
   # Wait until the file is done playing
   while vc.is_playing():
     time.sleep(1)
