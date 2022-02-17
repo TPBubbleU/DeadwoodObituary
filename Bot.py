@@ -71,7 +71,7 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
     
   # Wait until the file is done playing
   while vc.is_playing():
-    time.sleep(1)
+    await asyncio.sleep(2)
   # stop the playback disconnect 
   vc.stop()
   await vc.disconnect()
