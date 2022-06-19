@@ -173,7 +173,7 @@ async def on_voice_state_update(member, before, after):
         overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
     categoryChannel = guild.get_channel(887583365442715708) # Outside of Town
     channelName = (userData["PosseName"] if userData["PosseName"] else (member.nick if member.nick else member.name))
-    newChannel = await guild.create_voice_channel(name=channelName, bitrate=128000, category=categoryChannel, overwrites=overwrites)
+    newChannel = await guild.create_voice_channel(name=channelName, bitrate=96000, category=categoryChannel, overwrites=overwrites)
     await member.move_to(channel=newChannel)
     
   # Delete voice channels if no one is in them after state updates and they are not the Special name
