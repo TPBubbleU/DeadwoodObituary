@@ -19,17 +19,17 @@ jobs:
     - name: Get the right directory
       run: cd /home/cheesy_george/actions-runner/_work/DeadwoodObituary/DeadwoodObituary/
     - name: Build the Docker image
-      run: sudo docker build . --file Dockerfile --tag discord_bot:prod
+      run: docker build . --file Dockerfile --tag discord_bot:prod
     - name: stop and remote old container
       run: |
-        sudo docker stop discord_bot_live
-        sudo docker rm discord_bot_live
-        sudo docker system prune -f
+        docker stop discord_bot_live
+        docker rm discord_bot_live
+        docker system prune -f
       continue-on-error: true
     - name: List images
-      run: sudo docker image ls
+      run: docker image ls
     - name: Run the Docker image
       env:
         DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-      run: sudo docker run -v /var/lib/mysql:/var/lib/mysql -d -e DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN -e SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET --name discord_bot_live discord_bot:prod 
+      run: docker run -v /var/lib/mysql:/var/lib/mysql -d -e DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN -e SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET --name discord_bot_live discord_bot:prod 
