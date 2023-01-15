@@ -17,9 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Get the right directory
-      run: docker build . --file Dockerfile --tag discord_bot:prod
-    - name: Build the Docker image
       run: cd /home/cheesy_george/actions-runner/_work/DeadwoodObituary/DeadwoodObituary/
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag discord_bot:prod
     - name: stop and remote old container
       run: |
         docker stop discord_bot_live
