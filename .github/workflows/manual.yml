@@ -11,6 +11,8 @@ on:
       - main
     paths-ignore:
     - '*.md'
+  workflow_dispatch:
+
 jobs:
   deploy_container:
     runs-on: self-hosted
