@@ -12,6 +12,7 @@ except KeyError:
   print("Please set the environment variable DISCORD_BOT_TOKEN")
   exit(1)
 
+## TODO: add try/except for SPOTIFY_CLIENT_SECRET
 secret_token = (os.environ["DISCORD_BOT_TOKEN"])
 spotify_secret = (os.environ["SPOTIFY_CLIENT_SECRET"])
 
@@ -21,6 +22,7 @@ intents.members = True
 intents.presences = True
 
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
+## TODO: turn into env var, can't test if the server to log into is hardcoded
 servers = [882043693274628167]
 
 ###############################
@@ -48,7 +50,7 @@ servers = [882043693274628167]
 #   interaction = await ctx.respond(content=f"Saying '{text}' ", ephemeral=True)
 #   time.sleep(5)
 #   await interaction.edit_original_message(content="We changed the thing")
-  
+
 @bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
 async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
                          , text: discord.Option(str, required=True)
@@ -79,7 +81,7 @@ async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, require
   await vc.disconnect()
 
 ##################################
-## Secret Discord Voices Things ##
+## Bot Slash Commands ##
 ##################################
 
 def getUserData(id):
@@ -136,12 +138,15 @@ async def removefrommylist(ctx, member1: discord.Option(discord.Member, required
   
 @bot.event
 async def on_voice_state_update(member, before, after):
+  ## TODO: Guessing this print is from some debugging, do we need it. 
+  ## TODO: make SpecialChannelName and env.  
   #print(f"Started a on_voice_state_update at {datetime.datetime.now()}")
   if member.bot: #Quick and easy out if the event is caused by a bot
     return
   SpecialChannelName = 'Round Up A Posse'
   
   # Making named booleans for code visibility 
+  ## TODO: need to ask nick about
   afterExists = after is not None and after.channel is not None
   afterIsPosseChannel = afterExists and after.channel.name == SpecialChannelName 
   nobodyInAfterChannel = afterExists and len(after.channel.voice_states) == 0
@@ -166,11 +171,13 @@ async def on_voice_state_update(member, before, after):
       overwrites = {
         guild.default_role: discord.PermissionOverwrite(connect=False, view_channel=False),
         # This is the "Townspeople" role
+        ## TODO: document this special role for discord, set up an env var. 
         guild.get_role(891126367498928148): discord.PermissionOverwrite(connect=False, view_channel=False),
         member: discord.PermissionOverwrite(connect=True, view_channel=True, manage_channels=True)
       }
       for i in overwriteMemberList:
         overwrites[i] = discord.PermissionOverwrite(connect=True, view_channel=True)
+    ## TODO: ask nick about this channel.  probably env var as well. 
     categoryChannel = guild.get_channel(887583365442715708) # Outside of Town
     channelName = (userData["PosseName"] if userData["PosseName"] else (member.nick if member.nick else member.name))
     newChannel = await guild.create_voice_channel(name=channelName, bitrate=96000, category=categoryChannel, overwrites=overwrites)
@@ -222,6 +229,7 @@ async def on_voice_state_update(member, before, after):
 #############
 ## Spotify ##
 #############
+## TODO: I want to work on pullin this functionally out into it's out file, then import if we want spotify support. 
   
 @bot.slash_command(guild_ids=servers, name="spotify", description="Give chat control of your spotify")
 async def spotify(ctx):
@@ -353,7 +361,7 @@ async def spotify(ctx):
 ##################
 ## Other Things ##
 ##################
-
+## TODO: lets move to the bot slash commands section
 @bot.slash_command(guild_ids=servers, name="image_spoiler", description="Add a GOD-DAMNED IMAGE SPOILER")
 async def image_spoiler(ctx, text: discord.Option(str, required=False), attachment: discord.Option(discord.Attachment,required=False)):
   print(f"Started a image spoiler command at {datetime.datetime.now()} ")
@@ -369,13 +377,14 @@ async def on_ready():
 async def on_presence_update(before, after):
   if after.status == discord.Status.streaming:
     print(f"Started a on_presence_update streaming at {datetime.datetime.now()}")
+    ## TODO: convert this to env var. 
     for channel in await bot.fetch_channel(887583365442715708).channels: # Channels in "Outside of Town" Category Channel
       if channel.ChannelType == 'voice' and after in channel.members: # and channel.name[:11] != '(Streaming)'
         print(f"Actually chaning the channel name at {datetime.datetime.now()}")
         print(f"Adding streaming prefix to channel {channel.name} at {datetime.datetime.now()}")
         await channel.edit(name=f"(Streaming) {channel.name}", reason=f"{after.name} started streaming")
         return
-
+## TODO: this looks custom for our specific server, not exactly a bot slash command, need to figure out more from nick
 @bot.listen()
 async def on_message(message):
   if message.content[:13] == "Hey Mr. Hand!":
