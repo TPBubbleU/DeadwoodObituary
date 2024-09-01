@@ -23,61 +23,6 @@ intents.presences = True
 bot = commands.Bot(command_prefix="!", case_insensitive=True, intents=intents)
 servers = [882043693274628167]
 
-###############################
-## Town things (Horsey Game) ##
-###############################
-
-# @bot.slash_command(guild_ids=servers, name="guide-me-through-town", description="Have the hand guide you through town")
-# async def guidethroughtown(ctx):
-#   print(f"Started a GuideThroughTown Command at {datetime.datetime.now()}")
-#   townView = View()
-#   async def corral_Button_Callback(interaction):
-#     corralView = View()
-    
-  
-#   townView.add_item(Button(label="Go to the Corral", style=discord.ButtonStyle.green))
-#   townView.add_item(Button(label="Go to the Saloon", style=discord.ButtonStyle.green))
-#   townView.add_item(Button(label="Go to the Stables", style=discord.ButtonStyle.green))
-#   townView.add_item(Button(label="Go to the General Store", style=discord.ButtonStyle.green))
-#   await ctx.respond("Welcome to the Town", view=townView, ephemeral=True)
-
-# # Nick Testing things
-# @bot.slash_command(guild_ids=servers, name="the-big-test", description="TPBubbleU is messing around")
-# async def bigtest(ctx, text: discord.Option(str, required=True)):
-#   print(f"Started a test command at {datetime.datetime.now()} ")
-#   interaction = await ctx.respond(content=f"Saying '{text}' ", ephemeral=True)
-#   time.sleep(5)
-#   await interaction.edit_original_message(content="We changed the thing")
-  
-@bot.slash_command(guild_ids=servers, name="the-hands-voice", description="Make the hand say something in a voice")
-async def renameposse(ctx, channel: discord.Option(discord.VoiceChannel, required=True)
-                         , text: discord.Option(str, required=True)
-                         , attachment: discord.Option(discord.Attachment,required=False)):
-  print(f"Started a say command at {datetime.datetime.now()} for {ctx.author} channel of {channel} text of {text}")
-  if attachment and attachment.filename[-4:] in ['.mp3','.wav']:
-    file = await attachment.to_file()
-    interaction = await ctx.respond(content=f"Playing '{attachment.filename}' to channel '{channel}'", ephemeral=True)
-    audio = discord.FFmpegPCMAudio(source=file.fp, pipe=True)
-
-  else:
-    interaction = await ctx.respond(content=f"Saying '{text}' to channel '{channel}'", ephemeral=True)
-    # Lets make and save a voice to text mp3
-    gTTS(text=text, lang='en', slow=False).save("voicechat.mp3")
-    audio = discord.FFmpegPCMAudio(source="voicechat.mp3")
-    
-  # Connect and play the file
-  vc = await channel.connect()
-  player = vc.play(audio)
-    
-  # Wait until the file is done playing
-  while vc.is_playing():
-    await asyncio.sleep(1)
-  # an additional wait to make sure the bot has time to play the remaining audio before disconnecting 
-  await asyncio.sleep(5)
-  # stop the playback disconnect 
-  vc.stop()
-  await vc.disconnect()
-
 ##################################
 ## Secret Discord Voices Things ##
 ##################################
@@ -183,23 +128,6 @@ async def on_voice_state_update(member, before, after):
   if beforeExists and not beforeIsPosseChannel and nobodyInBeforeChannel:
     print(f"Started the process of deleting a channel at {datetime.datetime.now()}")
     await before.channel.delete()
-      
-  # Lets have a random chance to make a sound on entry
-  if randomSoundChance and afterExists and not beforeExists and not afterIsPosseChannel:
-    print(f"Started the process of making random noise at {datetime.datetime.now()}")
-    
-    # Lets disconnect the bot from all the voice channels they are currently in 
-    for i in bot.voice_clients:
-      await i.disconnect(force=True)
-      
-    # Connect to the channel we want the bot in and play the sound
-    vc = await after.channel.connect()
-    soundFileName = random.choice(['TheGoodtheBadandtheUgly.mp3','PumpkinCowboy.mp3']) # Add to this list later
-    vc.play(discord.FFmpegPCMAudio(soundFileName,options='-filter:a "volume=0.4"'))
-    
-    # Wait a bit and disconnect
-    time.sleep(5)
-    await vc.disconnect(force=True)
     
   # Special Consideration for someone joining a channel that has already started streaming and the channels name doesn't start with streaming
   if afterExists and not afterIsPosseChannel and member.status == discord.Status.streaming: # and after.channel.name[:11] != '(Streaming)'
@@ -219,147 +147,9 @@ async def on_voice_state_update(member, before, after):
 #   print(f"Started a love letter at {datetime.datetime.now()}")
 #   await ctx.respond(content="Started an LL game with  " + ", ".join([str(i) for i in [member1,member2,member3] if i]) + " ", ephemeral=True)
   
-#############
-## Spotify ##
-#############
-  
-@bot.slash_command(guild_ids=servers, name="spotify", description="Give chat control of your spotify")
-async def spotify(ctx):
-  print(f"Started a spotify controller at {datetime.datetime.now()}")
-  # Lets build our setup variables
-  redirect = 'https://script.google.com/macros/s/AKfycbwQYNT3PFFuArWNXf5u4fc4R0tsKoC2fWJ2SneOQ-Jpn1sfD-AG/exec'
-  clientId = '19b73b32826642e19f33a70678a59ea5'
-  scopes = 'user-read-private user-read-currently-playing user-modify-playback-state user-read-playback-position'
-  setup_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={clientId}&scope={quote(scopes)}&redirect_uri={quote(redirect)}'
-  userData = getUserData(ctx.author.id) # This sets up the user if they are not in memory already
-  
-  # Lets setup a method of getting a little embed object of what is currently playing so we can call it lots
-  def get_current_song_embed():
-    embed = discord.Embed(title="Currently Playing",color=discord.Color.blurple())
-    # Get currently playing endpoint from spotify
-    headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-    sresponse = requests.get('https://api.spotify.com/v1/me/player/currently-playing', headers=headers)
-    if sresponse.status_code == 204:
-      embed.add_field(name="Song Name:", value="Can't currently find anything playing")
-      return embed
-    current_song = sresponse.json()
-    # Build a whole embed with details from the song 
-    embed.add_field(name="Song Name:", value=current_song['item']['name'], inline=True)
-    embed.add_field(name="Album:", value=current_song['item']['album']['name'], inline=True)
-    embed.add_field(name="Artist(s):", value=", ".join([x['name'] for x in current_song['item']['artists']]), inline=True)
-    embed.add_field(name="Link:", value=current_song['item']['external_urls']['spotify'], inline=True)
-#     # Lets setup a method to wait and then update the currently playing on our embed
-#     wait_time = current_song['item']['duration_ms'] - current_song['progress_ms'] + 2000
-#     async def refresh_embeds():
-#       embed = get_current_song_embed()
-#       await ctx.interaction.edit_original_message(embeds=[embed])
-#     timer = Timer(wait_time, refresh_embeds())
-#     timer.start()
-    return embed  
-  
-  # Setup the last song button and callback for later
-  last_song_button = Button(label="last song")
-  async def last_song_callback(interaction):
-    requests.post('https://api.spotify.com/v1/me/player/previous', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
-    time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    embed = get_current_song_embed()
-    await interaction.edit_original_message(embeds=[embed])
-  last_song_button.callback = last_song_callback
-  
-  # Setup the next song button and callback for later
-  next_song_button = Button(label="next song")
-  async def next_song_callback(interaction):
-    requests.post('https://api.spotify.com/v1/me/player/next', headers={'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']})
-    time.sleep(1) # Lets give Spotify a tiny bit of time to actually change the song
-    embed = get_current_song_embed()
-    await interaction.edit_original_message(embeds=[embed])
-  next_song_button.callback = next_song_callback
-  
-  # Setup the queue a song button and callback for later
-  queue_song_button = Button(label="Queue song")
-  async def queue_song_callback(interaction):
-    search_modal = Modal(title="Lets search")
-    search_modal.add_item(InputText(label="What track are we searching for: "))
-    async def callback_for_modal(interaction):
-      headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-      params = {'q':search_modal.children[0].value, 'type':'track', 'limit':10}
-      sresponse = requests.get('https://api.spotify.com/v1/search', headers=headers, params=params)
-      results = sresponse.json()
-      options = []
-      for track in results['tracks']['items']:
-        artists = ", ".join([x['name'] for x in track['artists']])
-        custom_descrpition = f"Artist: {artists} Album:{track['album']['name']}"
-        options.append(discord.SelectOption(label=track['name'], 
-                                            description=custom_descrpition[:100], # descriptions have a max length of 100
-                                            value=track['uri']))
-      search_select = discord.ui.Select(placeholder="Pick a track", min_values=1, max_values=1, options=options)
-      async def search_select_callback(interaction):
-        headers = {'Authorization': 'Bearer ' + UsersLists[ctx.author.id]['SpotifyAccess']}
-        params = {'uri':search_select.values[0]}
-        sresponse = requests.post("https://api.spotify.com/v1/me/player/queue", headers=headers, params=params)
-        song_name = [x.label for x in options if x.value == search_select.values[0]][0]
-        await interaction.response.edit_message(content=f"Added {song_name} to queue", view=None)
-      search_select.callback = search_select_callback
-      search_view = View(search_select, timeout=None)
-      await interaction.response.send_message(content=f"Here is what we found for the search of {search_modal.children[0].value}", ephemeral=True, view=search_view)
-      
-    search_modal.callback = callback_for_modal
-    await interaction.response.send_modal(search_modal)
-    # Lets respond to the modal interaction so it doesn't say it failed
-    await interaction.response.send_message(".",delete_after=0)
-  queue_song_button.callback = queue_song_callback
-  
-  # Build our command view so other uses can use Spotify Commands
-  command_view = View(last_song_button, next_song_button, queue_song_button, timeout=None)
-  
-  # Lets setup our modal spawning button
-  modal_setup_button = Button(label="Give code")
-  async def modal_setup_button_click(interaction):
-    # Early out if someone else responded other than the orignial slash command user.  
-    if (interaction.user != ctx.author):
-      interaction.response.send_message("Hey, quit mucking about and do your own slash command", ephemeral=True)
-      return 
-    # Lets build a Modal because this seems to be one of the few ways of getting input text from a user
-    setup_modal = Modal(title="Auth code getter")
-    setup_modal.add_item(InputText(label="Enter key here: ", min_length=10))
-    async def callback_for_modal(interaction):
-      # Setup things to get the access token from Spotifys API
-      body = {
-        'client_id':clientId,
-        'client_secret':spotify_secret,
-        'grant_type':'authorization_code',
-        'code':setup_modal.children[0].value,
-        'redirect_uri':redirect
-      }
-      auth = requests.post('https://accounts.spotify.com/api/token', data=body)
-      print(auth.text)
-      #print(auth.json()['access_token'])
-      # Save our access token into our user list object
-      UsersLists[ctx.author.id]['SpotifyAccess'] = auth.json()['access_token']
-      # Lets update our original message
-      content = f"{ctx.author} has decided to live dangerously and give control of his spotify to chat "
-      embed = get_current_song_embed()
-      await ctx.interaction.edit_original_message(content=content, view=command_view, embeds=[embed])
-      # Lets respond to the modal interaction so it doesn't say it failed
-      await interaction.response.send_message(".",delete_after=0)
-    setup_modal.callback = callback_for_modal
-    await interaction.response.send_modal(setup_modal)
-  modal_setup_button.callback = modal_setup_button_click
-  
-  # Lets build a view with our predefined modal spawning button and link to get the auth code
-  setup_view = View(Button(label="Get Code", url=setup_url), modal_setup_button, timeout=None)
-  await ctx.respond(content=f"Lets start by getting you setup \nGo get a code from Spotify and give it back", view=setup_view)
-  
 ##################
 ## Other Things ##
 ##################
-
-@bot.slash_command(guild_ids=servers, name="image_spoiler", description="Add a GOD-DAMNED IMAGE SPOILER")
-async def image_spoiler(ctx, text: discord.Option(str, required=False), attachment: discord.Option(discord.Attachment,required=False)):
-  print(f"Started a image spoiler command at {datetime.datetime.now()} ")
-  attachment.filename = 'SPOILER_' + attachment.filename 
-  file = await attachment.to_file()
-  await ctx.respond(content=f"{text}", file=file)
     
 @bot.event
 async def on_ready():
